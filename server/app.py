@@ -1,12 +1,16 @@
 from flask import Flask
 from dotenv import load_dotenv
-from config.db import db
-from models.admin import Admin
+from flask_migrate import Migrate
 from urllib.parse import quote_plus
-from routes.auth import auth
+from models.property import Property
+from routes.property import property_bp
 import os
 
-# Load .env file
+from config.extensions import db, bcrypt, jwt, cors
+from models.admin import Admin
+from routes.auth import auth
+
+# Load Environment Variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -22,15 +26,25 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 )
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-# Initialize Database
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+# ==========================
+# Initialize Extensions
+# ==========================
 db.init_app(app)
+bcrypt.init_app(app)
+jwt.init_app(app)
+cors.init_app(app)
+migrate = Migrate(app, db)
 
-# Create tables automatically
-with app.app_context():
-    db.create_all()
-
+# ==========================
+# Register Blueprints
+# ==========================
 app.register_blueprint(auth, url_prefix="/api/auth")
+app.register_blueprint(property_bp, url_prefix="/api/property")
+
+# ==========================
+# Home Route
+# ==========================
 @app.route("/")
 def home():
     return "✅ ViNova Backend is Running Successfully!"
