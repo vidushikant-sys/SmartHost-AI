@@ -11,6 +11,7 @@ from models.admin import Admin
 from routes.auth import auth
 from routes.property import property_bp
 from routes.room import room_bp
+from routes.student import student_bp
 
 # Load Environment Variables
 load_dotenv()
@@ -44,7 +45,7 @@ migrate = Migrate(app, db)
 app.register_blueprint(auth, url_prefix="/api/auth")
 app.register_blueprint(property_bp, url_prefix="/api/property")
 app.register_blueprint(room_bp, url_prefix="/api/room")
-
+app.register_blueprint(student_bp, url_prefix="/api/student")
 # ==========================
 # Home Route
 # ==========================
