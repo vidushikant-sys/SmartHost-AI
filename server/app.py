@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 from flask_migrate import Migrate
 from urllib.parse import quote_plus
 from models.property import Property
-from routes.property import property_bp
+
 import os
 
 from config.extensions import db, bcrypt, jwt, cors
 from models.admin import Admin
 from routes.auth import auth
+from routes.property import property_bp
+from routes.room import room_bp
 
 # Load Environment Variables
 load_dotenv()
@@ -41,6 +43,7 @@ migrate = Migrate(app, db)
 # ==========================
 app.register_blueprint(auth, url_prefix="/api/auth")
 app.register_blueprint(property_bp, url_prefix="/api/property")
+app.register_blueprint(room_bp, url_prefix="/api/room")
 
 # ==========================
 # Home Route
