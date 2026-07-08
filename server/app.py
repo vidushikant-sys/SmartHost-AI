@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from flask_migrate import Migrate
 from urllib.parse import quote_plus
 
+
 import os
 
 from config.extensions import db, bcrypt, jwt, cors
@@ -16,6 +17,7 @@ from models.property import Property
 from models.room_allocation import RoomAllocation
 from models.fee import Fee
 from models.fee_payment import FeePayment
+from models.complaint import Complaint
 
 # ==========================
 # Routes
@@ -27,6 +29,7 @@ from routes.room import room_bp
 from routes.student import student_bp
 from routes.room_allocation import allocation_bp
 from routes.fee import fee_bp
+from routes.complaint import complaint_bp
 
 # ==========================
 # Load Environment Variables
@@ -95,6 +98,10 @@ app.register_blueprint(
 # Fee Module
 app.register_blueprint(
     fee_bp
+)
+app.register_blueprint(
+    complaint_bp,
+    url_prefix="/api/complaint"
 )
 
 # ==========================
