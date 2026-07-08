@@ -18,6 +18,7 @@ from models.room_allocation import RoomAllocation
 from models.fee import Fee
 from models.fee_payment import FeePayment
 from models.complaint import Complaint
+from models.notice import Notice
 
 # ==========================
 # Routes
@@ -30,6 +31,7 @@ from routes.student import student_bp
 from routes.room_allocation import allocation_bp
 from routes.fee import fee_bp
 from routes.complaint import complaint_bp
+from routes.notice import notice_bp
 
 # ==========================
 # Load Environment Variables
@@ -102,6 +104,10 @@ app.register_blueprint(
 app.register_blueprint(
     complaint_bp,
     url_prefix="/api/complaint"
+)
+app.register_blueprint(
+    notice_bp,
+    url_prefix="/api/notice"
 )
 
 # ==========================
