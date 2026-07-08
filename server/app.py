@@ -32,6 +32,7 @@ from routes.room_allocation import allocation_bp
 from routes.fee import fee_bp
 from routes.complaint import complaint_bp
 from routes.notice import notice_bp
+from routes.dashboard import dashboard_bp
 
 # ==========================
 # Load Environment Variables
@@ -108,6 +109,10 @@ app.register_blueprint(
 app.register_blueprint(
     notice_bp,
     url_prefix="/api/notice"
+)
+app.register_blueprint(
+    dashboard_bp,
+    url_prefix="/api/dashboard"
 )
 
 # ==========================
