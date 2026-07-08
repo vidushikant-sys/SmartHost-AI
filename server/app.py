@@ -34,6 +34,7 @@ from routes.complaint import complaint_bp
 from routes.notice import notice_bp
 from routes.dashboard import dashboard_bp
 from routes.search import search_bp
+from routes.upload import upload_bp
 # ==========================
 # Load Environment Variables
 # ==========================
@@ -117,6 +118,10 @@ app.register_blueprint(
 app.register_blueprint(
     search_bp,
     url_prefix="/api/search"
+)
+app.register_blueprint(
+    upload_bp,
+    url_prefix="/api/upload"
 )
 
 # ==========================
