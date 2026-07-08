@@ -33,7 +33,7 @@ from routes.fee import fee_bp
 from routes.complaint import complaint_bp
 from routes.notice import notice_bp
 from routes.dashboard import dashboard_bp
-
+from routes.search import search_bp
 # ==========================
 # Load Environment Variables
 # ==========================
@@ -113,6 +113,10 @@ app.register_blueprint(
 app.register_blueprint(
     dashboard_bp,
     url_prefix="/api/dashboard"
+)
+app.register_blueprint(
+    search_bp,
+    url_prefix="/api/search"
 )
 
 # ==========================

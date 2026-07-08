@@ -8,7 +8,51 @@ class Student(db.Model):
         db.Integer,
         primary_key=True
     )
+    def to_dict(self):
 
+        return {
+            "id": self.id,
+
+            "full_name": self.full_name,
+
+            "email": self.email,
+
+            "phone": self.phone,
+
+            "gender": self.gender,
+
+            "date_of_birth": str(self.date_of_birth)
+            if self.date_of_birth else None,
+
+            "aadhaar_number": self.aadhaar_number,
+
+            "guardian_name": self.guardian_name,
+
+            "guardian_phone": self.guardian_phone,
+
+            "address": self.address,
+
+            "city": self.city,
+
+            "state": self.state,
+
+            "pincode": self.pincode,
+
+            "college_name": self.college_name,
+
+            "course": self.course,
+
+            "semester": self.semester,
+
+            "admission_date": str(self.admission_date)
+            if self.admission_date else None,
+
+            "status": self.status,
+
+            "created_at": str(self.created_at),
+
+            "updated_at": str(self.updated_at)
+        }
     # ==========================
     # Personal Details
     # ==========================
