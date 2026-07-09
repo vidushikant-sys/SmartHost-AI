@@ -25,7 +25,18 @@ def add_room():
 
     data = request.get_json()
 
-    room = create_room(data)
+    room, error = create_room(data)
+
+    if error:
+
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
+
+        return error_response(error, 400)
 
     return success_response(
         "Room Added Successfully",
@@ -79,34 +90,32 @@ def update_room_details(room_id):
 
     data = request.get_json()
 
-    room = update_room(room_id, data)
+    room, error = update_room(room_id, data)
 
-    if room is None:
+    if error:
+
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
+
+        if error == "Room not found":
+            return error_response(
+                error,
+                404
+            )
+
         return error_response(
-            "Room not found",
-            404
+            error,
+            400
         )
 
     return success_response(
         "Room Updated Successfully",
-        {
-            "id": room.id,
-            "hostel_id": room.hostel_id,
-            "room_number": room.room_number,
-            "floor": room.floor,
-            "room_type": room.room_type,
-            "sharing_type": room.sharing_type,
-            "monthly_fee": room.monthly_fee,
-            "total_beds": room.total_beds,
-            "available_beds": room.available_beds,
-            "status": room.status,
-            "description": room.description,
-            "facilities": room.facilities,
-            "created_at": room.created_at,
-            "updated_at": room.updated_at
-        }
+        room.to_dict()
     )
-
 
 # ==================================================
 # Delete Room

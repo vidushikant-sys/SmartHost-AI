@@ -1,11 +1,16 @@
 from config.extensions import db
 from models.room import Room
-
+from validators.room_validator import RoomValidator
 
 # ==========================================
 # Create Room
 # ==========================================
 def create_room(data):
+
+    is_valid, errors = RoomValidator.validate(data)
+
+    if not is_valid:
+        return None, errors
 
     room = Room(
         hostel_id=data.get("hostel_id"),
@@ -24,8 +29,7 @@ def create_room(data):
     db.session.add(room)
     db.session.commit()
 
-    return room
-
+    return room, None
 
 # ==========================================
 # Get All Rooms
@@ -34,30 +38,7 @@ def get_all_rooms():
 
     rooms = Room.query.all()
 
-    room_list = []
-
-    for room in rooms:
-
-        room_list.append({
-            "id": room.id,
-            "hostel_id": room.hostel_id,
-            "room_number": room.room_number,
-            "floor": room.floor,
-            "room_type": room.room_type,
-            "sharing_type": room.sharing_type,
-            "monthly_fee": room.monthly_fee,
-            "total_beds": room.total_beds,
-            "available_beds": room.available_beds,
-            "status": room.status,
-            "description": room.description,
-            "facilities": room.facilities,
-            "created_at": room.created_at,
-            "updated_at": room.updated_at
-        })
-
-    return room_list
-
-
+    return [room.to_dict() for room in rooms]
 # ==========================================
 # Get Room By ID
 # ==========================================
@@ -68,22 +49,7 @@ def get_room_by_id(room_id):
     if room is None:
         return None
 
-    return {
-        "id": room.id,
-        "hostel_id": room.hostel_id,
-        "room_number": room.room_number,
-        "floor": room.floor,
-        "room_type": room.room_type,
-        "sharing_type": room.sharing_type,
-        "monthly_fee": room.monthly_fee,
-        "total_beds": room.total_beds,
-        "available_beds": room.available_beds,
-        "status": room.status,
-        "description": room.description,
-        "facilities": room.facilities,
-        "created_at": room.created_at,
-        "updated_at": room.updated_at
-    }
+    return room.to_dict()
 
 
 # ==========================================
@@ -91,10 +57,15 @@ def get_room_by_id(room_id):
 # ==========================================
 def update_room(room_id, data):
 
+    is_valid, errors = RoomValidator.validate(data)
+
+    if not is_valid:
+        return None, errors
+
     room = Room.query.get(room_id)
 
     if room is None:
-        return None
+        return None, "Room not found"
 
     room.room_number = data.get("room_number", room.room_number)
     room.floor = data.get("floor", room.floor)
@@ -109,8 +80,7 @@ def update_room(room_id, data):
 
     db.session.commit()
 
-    return room
-
+    return room, None
 
 # ==========================================
 # Delete Room
