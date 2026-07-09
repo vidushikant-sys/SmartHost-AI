@@ -1,11 +1,19 @@
 from config.extensions import db
 from models.property import Property
+from validators.property_validator import PropertyValidator
 
 
 # ==========================================
 # Create Hostel
 # ==========================================
 def create_property(data, owner_id):
+    # ==========================================
+    # Validate Request
+    # ==========================================
+    is_valid, errors = PropertyValidator.validate(data)
+
+    if not is_valid:
+        return None, errors
 
     property_obj = Property(
         owner_id=owner_id,
@@ -27,8 +35,7 @@ def create_property(data, owner_id):
     db.session.add(property_obj)
     db.session.commit()
 
-    return property_obj
-
+    return property_obj, None
 
 # ==========================================
 # Get All Hostels
@@ -57,14 +64,21 @@ def get_property_by_id(property_id):
 # Update Hostel
 # ==========================================
 def update_property(property_id, data, owner_id):
+    # ==========================================
+    # Validate Request
+    # ==========================================
+    is_valid, errors = PropertyValidator.validate(data)
+
+    if not is_valid:
+        return None, errors
 
     property_obj = Property.query.get(property_id)
 
     if property_obj is None:
-        return None
+        return None, "Hostel not found"
 
     if property_obj.owner_id != int(owner_id):
-        return False
+        return None, "Unauthorized"
 
     property_obj.title = data.get("title", property_obj.title)
     property_obj.description = data.get("description", property_obj.description)
@@ -86,7 +100,7 @@ def update_property(property_id, data, owner_id):
 
     db.session.commit()
 
-    return property_obj
+    return property_obj, None
 
 
 # ==========================================

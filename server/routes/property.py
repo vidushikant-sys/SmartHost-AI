@@ -21,19 +21,35 @@ property_bp = Blueprint("property", __name__)
 @jwt_required()
 def add_property():
 
-    data = request.get_json()
-    owner_id = get_jwt_identity()
+    try:
+        data = request.get_json()
 
-    property_obj = create_property(data, owner_id)
+        owner_id = get_jwt_identity()
 
-    return success_response(
-        "Hostel Added Successfully",
-        {
-            "hostel_id": property_obj.id
-        },
-        201
-    )
+        property_obj, error = create_property(data, owner_id)
 
+        if error:
+
+            if isinstance(error, dict):
+                return error_response(
+                    "Validation failed",
+                    400,
+                    error
+                )
+
+            return error_response(error, 400)
+
+        return success_response(
+            "Hostel Added Successfully",
+            {
+                "hostel_id": property_obj.id
+            },
+            201
+        )
+
+    except Exception as e:
+        print("PROPERTY ADD ERROR:", repr(e))
+        raise
 
 # ==========================================
 # Get All Hostels
@@ -79,29 +95,42 @@ def update_property_route(property_id):
     data = request.get_json()
     owner_id = get_jwt_identity()
 
-    property_obj = update_property(
+    property_obj, error = update_property(
         property_id,
         data,
         owner_id
     )
 
-    if property_obj is None:
-        return error_response(
-            "Hostel not found",
-            404
-        )
+    if error:
 
-    if property_obj is False:
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
+
+        if error == "Hostel not found":
+            return error_response(
+                error,
+                404
+            )
+
+        if error == "Unauthorized":
+            return error_response(
+                "You are not authorized to update this hostel",
+                403
+            )
+
         return error_response(
-            "You are not authorized to update this hostel",
-            403
+            error,
+            400
         )
 
     return success_response(
         "Hostel Updated Successfully",
         property_obj.to_dict()
     )
-
 
 # ==========================================
 # Delete Hostel
