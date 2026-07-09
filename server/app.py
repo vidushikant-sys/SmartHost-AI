@@ -7,6 +7,7 @@ from datetime import timedelta
 import os
 
 from config.extensions import db, bcrypt, jwt, cors
+from utils.error_handler import register_error_handlers
 
 # ==========================
 # Models
@@ -125,6 +126,12 @@ app.register_blueprint(
     upload_bp,
     url_prefix="/api/upload"
 )
+
+# ==========================
+# Register Global Error Handlers
+# ==========================
+
+register_error_handlers(app)
 
 # ==========================
 # Home Route
