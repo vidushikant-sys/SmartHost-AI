@@ -2,7 +2,7 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_migrate import Migrate
 from urllib.parse import quote_plus
-
+from datetime import timedelta
 
 import os
 
@@ -57,7 +57,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 )
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=8)
 
 # ==========================
 # Initialize Extensions
