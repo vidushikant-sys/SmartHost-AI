@@ -28,7 +28,18 @@ def add_student():
     student, error = create_student(data)
 
     if error:
-        return error_response(error, 400)
+
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
+
+        return error_response(
+            error,
+            400
+        )
 
     return success_response(
         "Student Added Successfully",
@@ -83,6 +94,13 @@ def edit_student(student_id):
     student, error = update_student(student_id, data)
 
     if error:
+
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
 
         if error == "Student not found":
             return error_response(

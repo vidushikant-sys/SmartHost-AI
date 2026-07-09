@@ -2,6 +2,7 @@ from datetime import datetime
 
 from config.extensions import db
 from models.student import Student
+from validators.student_validator import StudentValidator
 
 
 # ==================================================
@@ -42,6 +43,14 @@ def student_to_dict(student):
 # ==================================================
 
 def create_student(data):
+    # ==================================================
+    # Validate Request
+    # ==================================================
+
+    is_valid, errors = StudentValidator.validate(data)
+
+    if not is_valid:
+        return None, errors
 
     # Duplicate Email
     if Student.query.filter_by(email=data.get("email")).first():
@@ -146,6 +155,14 @@ def get_student_by_id(student_id):
 # ==================================================
 
 def update_student(student_id, data):
+    # ==================================================
+    # Validate Request
+    # ==================================================
+
+    is_valid, errors = StudentValidator.validate(data)
+
+    if not is_valid:
+        return None, errors
 
     student = Student.query.get(student_id)
 
