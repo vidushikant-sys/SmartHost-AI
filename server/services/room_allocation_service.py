@@ -5,6 +5,7 @@ from config.extensions import db
 from models.student import Student
 from models.room import Room
 from models.room_allocation import RoomAllocation
+from validators.allocation_validator import AllocationValidator
 
 
 # =====================================================
@@ -49,6 +50,11 @@ def allocation_to_dict(allocation):
 # =====================================================
 
 def allocate_room(data):
+
+    is_valid, errors = AllocationValidator.validate_allocate(data)
+
+    if not is_valid:
+        return None, errors
 
     student_id = data.get("student_id")
 
@@ -186,6 +192,11 @@ def get_room_allocations(room_id):
 
 def transfer_room(student_id, data):
 
+    is_valid, errors = AllocationValidator.validate_transfer(data)
+
+    if not is_valid:
+        return None, errors
+
     new_room_id = data.get("room_id")
 
     transfer_date = datetime.strptime(
@@ -280,6 +291,11 @@ def transfer_room(student_id, data):
 # =====================================================
 
 def vacate_room(student_id, data):
+
+    is_valid, errors = AllocationValidator.validate_vacate(data)
+
+    if not is_valid:
+        return None, errors
 
     vacated_date = datetime.strptime(
         data.get("vacated_date"),

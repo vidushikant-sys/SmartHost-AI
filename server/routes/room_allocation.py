@@ -33,6 +33,13 @@ def allocate():
     allocation, error = allocate_room(data)
 
     if error:
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
+
         return error_response(
             error,
             400
@@ -109,14 +116,26 @@ def transfer(student_id):
     allocation, error = transfer_room(student_id, data)
 
     if error:
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
 
         if error in [
             "Student has no active room",
             "Room not found"
         ]:
-            return error_response(error, 404)
+            return error_response(
+                error,
+                404
+            )
 
-        return error_response(error, 400)
+        return error_response(
+            error,
+            400
+        )
 
     return success_response(
         "Room transferred successfully",
@@ -138,14 +157,26 @@ def vacate(student_id):
     allocation, error = vacate_room(student_id, data)
 
     if error:
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
 
         if error in [
             "Student has no active room",
             "Room not found"
         ]:
-            return error_response(error, 404)
+            return error_response(
+                error,
+                404
+            )
 
-        return error_response(error, 400)
+        return error_response(
+            error,
+            400
+        )
 
     return success_response(
         "Room vacated successfully",
