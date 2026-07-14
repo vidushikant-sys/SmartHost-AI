@@ -3,7 +3,7 @@
 /* ==========================================================
    Design tokens (extends variables.css for dashboard-only use)
 ========================================================== */
-.dashboard-shell {
+:root {
   --info: #0EA5E9;
   --purple: #8B5CF6;
   --surface: var(--white);
@@ -11,8 +11,6 @@
   --radius-lg: 20px;
   --radius-md: var(--radius);
   --radius-sm: 10px;
-  min-height: 100vh;
-  background: var(--background);
 }
 
 /* ==========================================================

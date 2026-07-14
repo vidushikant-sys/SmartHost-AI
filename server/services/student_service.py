@@ -1,42 +1,279 @@
 from datetime import datetime
 
-from config.extensions import db
-from models.student import Student
-from validators.student_validator import StudentValidator
+from sqlalchemy.orm import joinedload
 
+from config.extensions import db
+
+from models.student import Student
+from models.room_allocation import RoomAllocation
+from models.room import Room
+from models.property import Property
+from models.fee import Fee
+from models.complaint import Complaint
+
+from validators.student_validator import StudentValidator
 
 # ==================================================
 # Helper Function
 # ==================================================
+# ==================================================
+# Get Active Allocation
+# ==================================================
+
+def get_active_allocation(student_id):
+
+    return (
+
+        RoomAllocation.query
+
+        .filter_by(
+
+            student_id=student_id,
+
+            allocation_status="Allocated"
+
+        )
+
+        .first()
+
+    )
+
+
+# ==================================================
+# Get Fee Information
+# ==================================================
+
+def get_fee_information(student_id):
+
+    fee = (
+
+        Fee.query
+
+        .filter_by(student_id=student_id)
+
+        .order_by(Fee.created_at.desc())
+
+        .first()
+
+    )
+
+    if fee is None:
+
+        return {
+
+            "fee_status": "Not Generated",
+
+            "pending_amount": 0,
+
+            "total_fee": 0,
+
+            "paid_amount": 0
+
+        }
+
+    return {
+
+        "fee_status": fee.payment_status,
+
+        "pending_amount": float(fee.remaining_amount),
+
+        "total_fee": float(fee.total_amount),
+
+        "paid_amount": float(fee.paid_amount)
+
+    }
+
+
+#==================================================
+# Complaint Count
+# ==================================================
+
+def get_complaint_count(student_id):
+
+    return (
+
+        db.session.query(
+
+            func.count(Complaint.id)
+
+        )
+
+        .filter(
+
+            Complaint.student_id == student_id
+
+        )
+
+        .scalar()
+
+        or 0
+
+    )
+# ==================================================
+# Student To Dictionary (Enhanced)
+# ==================================================
 
 def student_to_dict(student):
 
-    return {
-        "id": student.id,
-        "full_name": student.full_name,
-        "email": student.email,
-        "phone": student.phone,
-        "gender": student.gender,
-        "date_of_birth": str(student.date_of_birth),
-        "aadhaar_number": student.aadhaar_number,
-        "college_name": student.college_name,
-        "course": student.course,
-        "semester": student.semester,
-        "guardian_name": student.guardian_name,
-        "guardian_phone": student.guardian_phone,
-        "emergency_contact": student.emergency_contact,
-        "address": student.address,
-        "city": student.city,
-        "state": student.state,
-        "pincode": student.pincode,
-        "profile_photo": student.profile_photo,
-        "id_proof": student.id_proof,
-        "admission_date": str(student.admission_date),
-        "status": student.status,
-        "created_at": str(student.created_at),
-        "updated_at": str(student.updated_at)
-    }
+    allocation = get_active_allocation(student.id)
 
+    fee = get_fee_information(student.id)
+
+    complaint_count = get_complaint_count(student.id)
+
+    hostel_name = None
+    room_number = None
+    allocation_status = "Not Allocated"
+
+    if allocation:
+
+        allocation_status = allocation.allocation_status
+
+        if allocation.room:
+
+            room_number = allocation.room.room_number
+
+            if allocation.room.hostel:
+
+                hostel_name = allocation.room.hostel.title
+
+    return {
+
+        # ======================================
+        # Basic Information
+        # ======================================
+
+        "id": student.id,
+
+        "full_name": student.full_name,
+
+        "email": student.email,
+
+        "phone": student.phone,
+
+        "gender": student.gender,
+
+        "date_of_birth": (
+
+            str(student.date_of_birth)
+
+            if student.date_of_birth
+
+            else None
+
+        ),
+
+        "aadhaar_number": student.aadhaar_number,
+
+        # ======================================
+        # Education
+        # ======================================
+
+        "college_name": student.college_name,
+
+        "course": student.course,
+
+        "semester": student.semester,
+
+        # ======================================
+        # Guardian
+        # ======================================
+
+        "guardian_name": student.guardian_name,
+
+        "guardian_phone": student.guardian_phone,
+
+        "emergency_contact": student.emergency_contact,
+
+        # ======================================
+        # Address
+        # ======================================
+
+        "address": student.address,
+
+        "city": student.city,
+
+        "state": student.state,
+
+        "pincode": student.pincode,
+
+        # ======================================
+        # Documents
+        # ======================================
+
+        "profile_photo": student.profile_photo,
+
+        "id_proof": student.id_proof,
+
+        # ======================================
+        # Hostel Information
+        # ======================================
+
+        "hostel_name": hostel_name,
+
+        "room_number": room_number,
+
+        "allocation_status": allocation_status,
+
+        # ======================================
+        # Fee Information
+        # ======================================
+
+        "fee_status": fee["fee_status"],
+
+"pending_amount": fee["pending_amount"],
+
+"paid_amount": fee["paid_amount"],
+
+"total_fee": fee["total_fee"],
+
+        # ======================================
+        # Complaint
+        # ======================================
+
+        "complaint_count": complaint_count,
+
+        # ======================================
+        # Status
+        # ======================================
+
+        "status": student.status,
+
+        "admission_date": (
+
+            str(student.admission_date)
+
+            if student.admission_date
+
+            else None
+
+        ),
+
+        # ======================================
+        # Timestamp
+        # ======================================
+
+        "created_at": (
+
+            str(student.created_at)
+
+            if student.created_at
+
+            else None
+
+        ),
+
+        "updated_at": (
+
+            str(student.updated_at)
+
+            if student.updated_at
+
+            else None
+
+        )
+
+    }
 
 # ==================================================
 # Create Student
@@ -128,16 +365,38 @@ def create_student(data):
 
     return student, None
 # ==================================================
-# Get All Students
+# Get All Students (Optimized)
 # ==================================================
 
 def get_all_students():
 
-    students = Student.query.order_by(Student.id.desc()).all()
+    students = (
 
-    return [student_to_dict(student) for student in students]
+        Student.query
 
+        .options(
 
+            joinedload(Student.allocations)
+
+            .joinedload(RoomAllocation.room)
+
+            .joinedload(Room.hostel)
+
+        )
+
+        .order_by(Student.id.desc())
+
+        .all()
+
+    )
+
+    return [
+
+        student_to_dict(student)
+
+        for student in students
+
+    ]
 # ==================================================
 # Get Student By ID
 # ==================================================

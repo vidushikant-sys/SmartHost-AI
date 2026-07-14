@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import TopNavbar from "../../components/layout/TopNavbar";
+import DashboardLayout from "../../components/layout/DashboardLayout";
 import StatCard from "../../components/dashboard/StatCard";
 import RevenueChart from "../../components/dashboard/RevenueChart";
 import OccupancyCard from "../../components/dashboard/OccupancyCard";
@@ -67,9 +67,7 @@ function Dashboard() {
   });
 
   return (
-    <div className="dashboard-shell">
-      <TopNavbar />
-
+    <DashboardLayout>
       <div className="dashboard-content">
         <div className="dashboard-header">
           <div>
@@ -162,7 +160,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
 

@@ -36,14 +36,6 @@ function TopNavbar() {
 
   return (
     <header className="top-navbar">
-      <div className="top-navbar-left">
-        <div className="brand-mark">SH</div>
-        <div className="brand-text">
-          <h2>SmartHost AI</h2>
-          <span>Hostel Management Platform</span>
-        </div>
-      </div>
-
       <div className="top-navbar-search">
         <svg viewBox="0 0 24 24" fill="none">
           <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
