@@ -1,0 +1,297 @@
+/* ======================================================
+   Student Management Page
+====================================================== */
+
+.student-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: fadeIn 0.35s ease;
+}
+
+/* ======================================================
+   Header
+====================================================== */
+
+.student-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.student-header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.student-header p {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 15px;
+}
+
+/* ======================================================
+   Card
+====================================================== */
+
+.student-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 35px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+}
+
+.student-card h2 {
+    margin: 0 0 12px;
+    color: #1e293b;
+    font-size: 24px;
+}
+
+.student-card p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+/* ======================================================
+   Animation
+====================================================== */
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+/* ======================================================
+   Responsive
+====================================================== */
+
+@media (max-width:768px) {
+
+    .student-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .student-header h1 {
+        font-size: 24px;
+    }
+
+    .student-card {
+        padding: 24px;
+    }
+
+}
+/* ===================================
+   STUDENT HEADER
+=================================== */
+
+.student-page{
+    padding:30px;
+}
+
+.student-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:35px;
+}
+
+.student-header h1{
+    font-size:42px;
+    font-weight:700;
+    color:#1e293b;
+}
+
+.student-header p{
+    color:#64748b;
+    font-size:18px;
+}
+
+/* ===================================
+   STATS
+=================================== */
+
+.student-stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:24px;
+
+    margin-bottom:35px;
+
+}
+
+.student-stat-card{
+
+    background:#ffffff;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.06);
+
+    transition:.30s;
+
+}
+
+.student-stat-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.student-stat-icon{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:28px;
+
+}
+
+.student-stat-content h2{
+
+    margin:0;
+
+    font-size:34px;
+
+    color:#0f172a;
+
+}
+
+.student-stat-content p{
+
+    margin-top:6px;
+
+    color:#64748b;
+
+    font-size:16px;
+
+}
+
+/* colors */
+
+.blue .student-stat-icon{
+
+    background:#4f46e5;
+
+}
+
+.green .student-stat-icon{
+
+    background:#10b981;
+
+}
+
+.orange .student-stat-icon{
+
+    background:#f59e0b;
+
+}
+
+.red .student-stat-icon{
+
+    background:#ef4444;
+
+}
+
+/* ===================================
+   CARD
+=================================== */
+
+.student-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:35px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.05);
+
+}
+
+.student-card h2{
+
+    margin-bottom:15px;
+
+    color:#0f172a;
+
+}
+
+.student-card p{
+
+    color:#64748b;
+
+}
+
+/* ===================================
+   RESPONSIVE
+=================================== */
+
+@media(max-width:1200px){
+
+.student-stats{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:700px){
+
+.student-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:15px;
+
+}
+
+.student-stats{
+
+grid-template-columns:1fr;
+
+}
+
+}

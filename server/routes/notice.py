@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+﻿from flask import Blueprint, request
 
 from flask_jwt_extended import jwt_required
 
@@ -17,12 +17,10 @@ from utils.response import (
 )
 
 
-
 notice_bp = Blueprint(
     "notice",
     __name__
 )
-
 
 
 # ==================================================
@@ -35,43 +33,22 @@ notice_bp = Blueprint(
 )
 @jwt_required()
 def add_notice():
-
-
     data = request.get_json()
 
+    notice, error = create_notice(data)
 
-    if not data:
-
-        return error_response(
-            "Request body required",
-            400
-        )
-
-
-
-    required_fields = [
-        "title",
-        "description",
-        "created_by"
-    ]
-
-
-
-    for field in required_fields:
-
-        if field not in data:
-
+    if error:
+        if isinstance(error, dict):
             return error_response(
-                f"{field} is required",
-                400
+                "Validation failed",
+                400,
+                error
             )
 
-
-
-    notice = create_notice(
-        data
-    )
-
+        return error_response(
+            error,
+            400
+        )
 
     return success_response(
         "Notice created successfully",
@@ -80,7 +57,6 @@ def add_notice():
         },
         201
     )
-
 
 
 # ==================================================
@@ -93,16 +69,12 @@ def add_notice():
 )
 @jwt_required()
 def all_notices():
-
-
     notices = get_all_notices()
-
 
     return success_response(
         "Notices fetched successfully",
         notices
     )
-
 
 
 # ==================================================
@@ -117,28 +89,20 @@ def all_notices():
 def notice_details(
     notice_id
 ):
-
-
     notice = get_notice_by_id(
         notice_id
     )
 
-
-
     if not notice:
-
         return error_response(
             "Notice not found",
             404
         )
 
-
-
     return success_response(
         "Notice fetched successfully",
         notice.to_dict()
     )
-
 
 
 # ==================================================
@@ -153,33 +117,36 @@ def notice_details(
 def edit_notice(
     notice_id
 ):
-
-
     data = request.get_json()
 
-
-
-    notice = update_notice(
+    notice, error = update_notice(
         notice_id,
         data
     )
 
+    if error:
+        if isinstance(error, dict):
+            return error_response(
+                "Validation failed",
+                400,
+                error
+            )
 
-
-    if not notice:
+        if error == "Notice not found":
+            return error_response(
+                error,
+                404
+            )
 
         return error_response(
-            "Notice not found",
-            404
+            error,
+            400
         )
-
-
 
     return success_response(
         "Notice updated successfully",
         notice.to_dict()
     )
-
 
 
 # ==================================================
@@ -194,28 +161,20 @@ def edit_notice(
 def remove_notice(
     notice_id
 ):
-
-
     result = delete_notice(
         notice_id
     )
 
-
-
     if not result:
-
         return error_response(
             "Notice not found",
             404
         )
 
-
-
     return success_response(
         "Notice deleted successfully",
         {}
     )
-
 
 
 # ==================================================
@@ -228,11 +187,7 @@ def remove_notice(
 )
 @jwt_required()
 def notice_statistics():
-
-
     stats = get_notice_stats()
-
-
 
     return success_response(
         "Notice statistics fetched successfully",

@@ -1,0 +1,147 @@
+// ==========================================================
+// Dashboard Service
+// Handles all API calls for the Admin Dashboard.
+// Talks directly to the Flask backend (JWT protected routes).
+// ==========================================================
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+const MONTH_LABELS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+// ----------------------------------------------------------
+// Low level fetch wrapper
+// Adds JWT auth header + normalizes error handling
+// ----------------------------------------------------------
+async function request(endpoint, options = {}) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
+
+  let body = null;
+  try {
+    body = await res.json();
+  } catch {
+    // no JSON body
+  }
+
+  if (!res.ok || (body && body.success === false)) {
+    const message = body?.message || `Request failed (${res.status})`;
+    throw new Error(message);
+  }
+
+  return body?.data ?? body;
+}
+
+// ----------------------------------------------------------
+// Core dashboard stats -> GET /api/dashboard/
+// { hostel, rooms, students, fees, complaints, notices }
+// ----------------------------------------------------------
+export function getDashboardStats() {
+  return request("/dashboard/");
+}
+
+// ----------------------------------------------------------
+// Pending fees -> GET /api/fees/pending
+// Used to power the "Upcoming Fees" widget
+// ----------------------------------------------------------
+export async function getUpcomingFees(limit = 5) {
+  const fees = await request("/fees/pending");
+  return (fees || [])
+    .slice()
+    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
+    .slice(0, limit);
+}
+
+// ----------------------------------------------------------
+// Notices -> GET /api/notice/all
+// Used to power the "Notice Board" widget
+// ----------------------------------------------------------
+export async function getRecentNotices(limit = 5) {
+  const notices = await request("/notice/all");
+  return (notices || [])
+    .filter((n) => n.status === "Active")
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, limit);
+}
+
+// ----------------------------------------------------------
+// Complaints -> GET /api/complaint/all
+// Used to power the "Recent Activity" widget
+// ----------------------------------------------------------
+export async function getRecentComplaints(limit = 6) {
+  const complaints = await request("/complaint/all");
+  return (complaints || [])
+    .slice()
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, limit);
+}
+
+// ----------------------------------------------------------
+// Revenue trend -> GET /api/fees/monthly-collection/:month/:year
+// Fetches the last `count` months (oldest -> newest) in parallel
+// ----------------------------------------------------------
+export async function getRevenueTrend(count = 6) {
+  const now = new Date();
+  const targets = [];
+
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    targets.push({ month: d.getMonth() + 1, year: d.getFullYear() });
+  }
+
+  const results = await Promise.all(
+    targets.map(({ month, year }) =>
+      request(`/fees/monthly-collection/${month}/${year}`).catch(() => ({
+        month,
+        year,
+        total_collection: 0,
+      }))
+    )
+  );
+
+  return results.map((r, i) => ({
+    label: MONTH_LABELS[targets[i].month - 1],
+    year: targets[i].year,
+    total: Number(r.total_collection) || 0,
+  }));
+}
+
+// ----------------------------------------------------------
+// Combined loader for the whole dashboard page.
+// Runs every widget's request in parallel; a single widget
+// failing (e.g. an unfinished endpoint) won't break the rest.
+// ----------------------------------------------------------
+export async function getDashboardOverview() {
+  const [stats, revenue, upcomingFees, notices, complaints] =
+    await Promise.allSettled([
+      getDashboardStats(),
+      getRevenueTrend(6),
+      getUpcomingFees(5),
+      getRecentNotices(5),
+      getRecentComplaints(6),
+    ]);
+
+  const value = (r, fallback) =>
+    r.status === "fulfilled" ? r.value : fallback;
+
+  return {
+    stats: value(stats, null),
+    revenue: value(revenue, []),
+    upcomingFees: value(upcomingFees, []),
+    notices: value(notices, []),
+    complaints: value(complaints, []),
+    errors: [stats, revenue, upcomingFees, notices, complaints]
+      .filter((r) => r.status === "rejected")
+      .map((r) => r.reason?.message),
+  };
+}

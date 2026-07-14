@@ -43,7 +43,7 @@ def dashboard():
         )
 
 
-    except Exception as e:
+    except Exception:
 
 
         return error_response(
