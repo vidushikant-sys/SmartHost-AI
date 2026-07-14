@@ -51,7 +51,9 @@ def register_error_handlers(app):
 
     @app.errorhandler(Exception)
     def internal_server_error(error):
-        print("GLOBAL ERROR:", error)
+        import traceback
+
+        traceback.print_exc()
 
         return jsonify({
             "success": False,

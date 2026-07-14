@@ -7,7 +7,10 @@ from werkzeug.utils import secure_filename
 # Upload Configuration
 # =====================================
 
-BASE_UPLOAD_FOLDER = "uploads"
+BASE_UPLOAD_FOLDER = os.path.join(
+    os.getcwd(),
+    "uploads"
+)
 
 
 ALLOWED_EXTENSIONS = {
@@ -134,9 +137,9 @@ def save_file(
         )
 
 
-    except Exception as e:
+    except Exception:
 
-        raise e
+        raise
 
 
 

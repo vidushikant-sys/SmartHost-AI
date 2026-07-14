@@ -1,9 +1,8 @@
-from datetime import date
+﻿from datetime import date
 
 from config.extensions import db
-
 from models.notice import Notice
-
+from validators.notice_validator import NoticeValidator
 
 
 # ==================================================
@@ -11,6 +10,9 @@ from models.notice import Notice
 # ==================================================
 
 def create_notice(data):
+    is_valid, errors = NoticeValidator.validate(data)
+    if not is_valid:
+        return None, errors
 
     notice = Notice(
 
@@ -46,8 +48,7 @@ def create_notice(data):
     db.session.commit()
 
 
-    return notice
-
+    return notice, None
 
 
 # ==================================================
@@ -86,7 +87,6 @@ def get_all_notices():
     ]
 
 
-
 # ==================================================
 # Get Notice By ID
 # ==================================================
@@ -102,7 +102,6 @@ def get_notice_by_id(notice_id):
     return notice
 
 
-
 # ==================================================
 # Update Notice
 # ==================================================
@@ -112,6 +111,10 @@ def update_notice(
         data
 ):
 
+    is_valid, errors = NoticeValidator.validate_update(data)
+    if not is_valid:
+        return None, errors
+
     notice = Notice.query.get(
         notice_id
     )
@@ -119,8 +122,7 @@ def update_notice(
 
     if not notice:
 
-        return None
-
+        return None, "Notice not found"
 
 
     if "title" in data:
@@ -128,11 +130,9 @@ def update_notice(
         notice.title = data["title"]
 
 
-
     if "description" in data:
 
         notice.description = data["description"]
-
 
 
     if "category" in data:
@@ -140,11 +140,9 @@ def update_notice(
         notice.category = data["category"]
 
 
-
     if "priority" in data:
 
         notice.priority = data["priority"]
-
 
 
     if "expiry_date" in data:
@@ -152,18 +150,15 @@ def update_notice(
         notice.expiry_date = data["expiry_date"]
 
 
-
     if "status" in data:
 
         notice.status = data["status"]
 
 
-
     db.session.commit()
 
 
-    return notice
-
+    return notice, None
 
 
 # ==================================================
@@ -193,7 +188,6 @@ def delete_notice(notice_id):
 
 
     return True
-
 
 
 # ==================================================
