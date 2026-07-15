@@ -1,103 +1,212 @@
-import {
-    FaUserGraduate,
-    FaUserCheck,
-    FaBed,
-    FaDoorOpen
-} from "react-icons/fa";
+import { FaUserGraduate, FaUserCheck, FaUserTimes, FaBed, FaUniversity, FaMoneyBillWave } from 'react-icons/fa';
 
-export default function StudentStats({ students = [] }) {
+function StudentStats({ students = [] }) {
+
+    console.log("StudentStats Data:", students);
+    console.log(Array.isArray(students));
 
     const totalStudents = students.length;
-
     const activeStudents = students.filter(
+
         student => student.status === "Active"
+
     ).length;
 
-    const allocatedStudents = students.filter(
+    const inactiveStudents = students.filter(
+
+        student => student.status !== "Active"
+
+    ).length;
+
+    const allocatedRooms = students.filter(
+
+        student => student.room_number
+
+    ).length;
+
+    const pendingFees = students.filter(
+
         student =>
-            student.room_number !== null &&
-            student.room_number !== undefined &&
-            student.room_number !== ""
+
+            student.fee_status === "Pending"
+
     ).length;
-
-    const vacantStudents =
-        totalStudents - allocatedStudents;
-
-    const stats = [
-
-        {
-            title: "Total Students",
-            value: totalStudents,
-            icon: <FaUserGraduate />,
-            className: "blue"
-        },
-
-        {
-            title: "Active Students",
-            value: activeStudents,
-            icon: <FaUserCheck />,
-            className: "green"
-        },
-
-        {
-            title: "Room Allocated",
-            value: allocatedStudents,
-            icon: <FaBed />,
-            className: "orange"
-        },
-
-        {
-            title: "Vacant",
-            value: vacantStudents,
-            icon: <FaDoorOpen />,
-            className: "red"
-        }
-
-    ];
 
     return (
 
         <div className="student-stats">
 
-            {
+            <div className="student-stat-card total">
 
-                stats.map((item, index) => (
+                <div className="stat-icon">
 
-                    <div
-                        key={index}
-                        className={`student-stat-card ${item.className}`}
-                    >
+                    <FaUserGraduate />
 
-                        <div className="student-stat-icon">
+                </div>
 
-                            {item.icon}
+                <div>
 
-                        </div>
+                    <h3>
 
-                        <div className="student-stat-content">
+                        {totalStudents}
 
-                            <h2>
+                    </h3>
 
-                                {item.value}
+                    <p>
 
-                            </h2>
+                        Total Students
 
-                            <p>
+                    </p>
 
-                                {item.title}
+                </div>
 
-                            </p>
+            </div>
 
-                        </div>
+            <div className="student-stat-card active">
 
-                    </div>
+                <div className="stat-icon">
 
-                ))
+                    <FaUserCheck />
 
-            }
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        {activeStudents}
+
+                    </h3>
+
+                    <p>
+
+                        Active Students
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div className="student-stat-card inactive">
+
+                <div className="stat-icon">
+
+                    <FaUserTimes />
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        {inactiveStudents}
+
+                    </h3>
+
+                    <p>
+
+                        Inactive Students
+
+                    </p>
+
+                </div>
+
+            </div>
+                        <div className="student-stat-card rooms">
+
+                <div className="stat-icon">
+
+                    <FaBed />
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        {allocatedRooms}
+
+                    </h3>
+
+                    <p>
+
+                        Room Allocated
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div className="student-stat-card hostel">
+
+                <div className="stat-icon">
+
+                    <FaUniversity />
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        {
+
+                            new Set(
+
+                                students.map(
+
+                                    student => student.hostel_name
+
+                                )
+
+                            ).size
+
+                        }
+
+                    </h3>
+
+                    <p>
+
+                        Hostels
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div className="student-stat-card fees">
+
+                <div className="stat-icon">
+
+                    <FaMoneyBillWave />
+
+                </div>
+
+                <div>
+
+                    <h3>
+
+                        {pendingFees}
+
+                    </h3>
+
+                    <p>
+
+                        Pending Fees
+
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
     );
 
 }
+
+export default StudentStats;

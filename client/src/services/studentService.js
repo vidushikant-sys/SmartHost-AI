@@ -1,79 +1,65 @@
 import axios from "axios";
 
-// ==========================================
-// Base API URL
-// ==========================================
+const API = axios.create({
 
-const API_URL = "http://127.0.0.1:5000/api/student";
+    baseURL: "http://127.0.0.1:5000/api"
 
-// ==========================================
+});
+
+// ================================
+// Get JWT Token
+// ================================
+
+API.interceptors.request.use((config) => {
+
+    const token = localStorage.getItem("token");
+
+    if (token) {
+
+        config.headers.Authorization = `Bearer ${token}`;
+
+    }
+
+    return config;
+
+});
+
+// ================================
 // Get All Students
-// ==========================================
+// ================================
 
-export const getAllStudents = async () => {
+export const getAllStudents = () =>
 
-    const response = await axios.get(
-        `${API_URL}/all`
-    );
+    API.get("/student/all");
 
-    return response.data;
+// ================================
+// Get Student By Id
+// ================================
 
-};
+export const getStudentById = (id) =>
 
-// ==========================================
-// Get Student By ID
-// ==========================================
+    API.get(`/student/${id}`);
 
-export const getStudentById = async (id) => {
+// ================================
+// Create Student
+// ================================
 
-    const response = await axios.get(
-        `${API_URL}/${id}`
-    );
+export const createStudent = (data) =>
 
-    return response.data;
+    API.post("/student/create", data);
 
-};
-
-// ==========================================
-// Add Student
-// ==========================================
-
-export const addStudent = async (studentData) => {
-
-    const response = await axios.post(
-        `${API_URL}/add`,
-        studentData
-    );
-
-    return response.data;
-
-};
-
-// ==========================================
+// ================================
 // Update Student
-// ==========================================
+// ================================
 
-export const updateStudent = async (id, studentData) => {
+export const updateStudent = (id, data) =>
 
-    const response = await axios.put(
-        `${API_URL}/update/${id}`,
-        studentData
-    );
+    API.put(`/student/update/${id}`, data);
 
-    return response.data;
-
-};
-
-// ==========================================
+// ================================
 // Delete Student
-// ==========================================
+// ================================
 
-export const deleteStudent = async (id) => {
+export const deleteStudent = (id) =>
 
-    const response = await axios.delete(
-        `${API_URL}/delete/${id}`
-    );
-
-    return response.data;
-
-};
+    API.delete(`/student/delete/${id}`);

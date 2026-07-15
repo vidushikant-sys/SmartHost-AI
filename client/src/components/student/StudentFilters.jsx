@@ -1,150 +1,310 @@
-import { FaSearch, FaFilter } from "react-icons/fa";
+import {
 
-export default function StudentFilters({
+    FaSearch,
+
+    FaFilter,
+
+    FaTimes
+
+} from "react-icons/fa";
+function StudentFilters({
 
     search,
+
     setSearch,
 
     filters,
+
     setFilters
 
 }) {
 
+    const clearFilters = () => {
+
+        setSearch("");
+
+        setFilters({
+
+            course: "",
+
+            semester: "",
+
+            status: ""
+
+        });
+
+    };
+
     return (
 
-        <div className="student-filters">
+        <div className="student-filter-card">
 
-            <div className="search-box">
+            <div className="filter-title">
 
-                <FaSearch />
+                <FaFilter />
 
-                <input
+                <span>
 
-                    type="text"
+                    Search & Filters
 
-                    placeholder="Search student by name, email or phone..."
-
-                    value={search}
-
-                    onChange={(e)=>setSearch(e.target.value)}
-
-                />
+                </span>
 
             </div>
 
-            <div className="filter-group">
+            <div className="student-filter-grid">
 
-                <FaFilter className="filter-icon"/>
+                {/* ====================== */}
+                {/* Search */}
+                {/* ====================== */}
 
-                <select
+                <div className="filter-group">
 
-                    value={filters.status}
+                    <label>
 
-                    onChange={(e)=>
+                        Search Student
 
-                        setFilters({
+                    </label>
 
-                            ...filters,
+                    <div className="search-box">
 
-                            status:e.target.value
+                        <FaSearch />
 
-                        })
+                        <input
 
-                    }
+                            type="text"
 
-                >
+                            placeholder="Name, Email or Phone"
 
-                    <option value="">
+                            value={search}
 
-                        All Status
+                            onChange={(e) =>
 
-                    </option>
+                                setSearch(
 
-                    <option value="Active">
+                                    e.target.value
 
-                        Active
+                                )
 
-                    </option>
+                            }
 
-                    <option value="Inactive">
+                        />
 
-                        Inactive
+                    </div>
 
-                    </option>
+                </div>
 
-                </select>
+                {/* ====================== */}
+                {/* Course */}
+                {/* ====================== */}
 
-                <select
+                <div className="filter-group">
 
-                    value={filters.course}
+                    <label>
 
-                    onChange={(e)=>
+                        Course
 
-                        setFilters({
+                    </label>
 
-                            ...filters,
+                    <select
 
-                            course:e.target.value
+                        value={filters.course}
 
-                        })
+                        onChange={(e) =>
 
-                    }
+                            setFilters({
 
-                >
+                                ...filters,
 
-                    <option value="">
+                                course: e.target.value
 
-                        All Courses
+                            })
 
-                    </option>
+                        }
 
-                    <option>BCA</option>
+                    >
 
-                    <option>BBA</option>
+                        <option value="">
 
-                    <option>B.Com</option>
+                            All Courses
 
-                    <option>MCA</option>
+                        </option>
 
-                </select>
+                        <option>
 
-                <select
+                            BCA
 
-                    value={filters.semester}
+                        </option>
 
-                    onChange={(e)=>
+                        <option>
 
-                        setFilters({
+                            BBA
 
-                            ...filters,
+                        </option>
 
-                            semester:e.target.value
+                        <option>
 
-                        })
+                            MCA
 
-                    }
+                        </option>
 
-                >
+                        <option>
 
-                    <option value="">
+                            MBA
+
+                        </option>
+
+                    </select>
+
+                </div>
+                                {/* ====================== */}
+                {/* Semester */}
+                {/* ====================== */}
+
+                <div className="filter-group">
+
+                    <label>
 
                         Semester
 
-                    </option>
+                    </label>
 
-                    <option>1</option>
+                    <select
 
-                    <option>2</option>
+                        value={filters.semester}
 
-                    <option>3</option>
+                        onChange={(e) =>
 
-                    <option>4</option>
+                            setFilters({
 
-                    <option>5</option>
+                                ...filters,
 
-                    <option>6</option>
+                                semester: e.target.value
 
-                </select>
+                            })
+
+                        }
+
+                    >
+
+                        <option value="">
+
+                            All Semesters
+
+                        </option>
+
+                        <option value="1">
+
+                            Semester 1
+
+                        </option>
+
+                        <option value="2">
+
+                            Semester 2
+
+                        </option>
+
+                        <option value="3">
+
+                            Semester 3
+
+                        </option>
+
+                        <option value="4">
+
+                            Semester 4
+
+                        </option>
+
+                        <option value="5">
+
+                            Semester 5
+
+                        </option>
+
+                        <option value="6">
+
+                            Semester 6
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                {/* ====================== */}
+                {/* Status */}
+                {/* ====================== */}
+
+                <div className="filter-group">
+
+                    <label>
+
+                        Status
+
+                    </label>
+
+                    <select
+
+                        value={filters.status}
+
+                        onChange={(e) =>
+
+                            setFilters({
+
+                                ...filters,
+
+                                status: e.target.value
+
+                            })
+
+                        }
+
+                    >
+
+                        <option value="">
+
+                            All Status
+
+                        </option>
+
+                        <option value="Active">
+
+                            Active
+
+                        </option>
+
+                        <option value="Inactive">
+
+                            Inactive
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            {/* ====================== */}
+            {/* Clear Button */}
+            {/* ====================== */}
+
+            <div className="filter-footer">
+
+                <button
+
+                    className="clear-filter-btn"
+
+                    onClick={clearFilters}
+
+                >
+
+                    <FaTimes />
+
+                    Clear Filters
+
+                </button>
 
             </div>
 
@@ -153,3 +313,5 @@ export default function StudentFilters({
     );
 
 }
+
+export default StudentFilters;
