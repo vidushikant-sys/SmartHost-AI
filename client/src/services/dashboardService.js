@@ -1,46 +1,15 @@
+import { request } from "./apiClient";
+
 // ==========================================================
 // Dashboard Service
 // Handles all API calls for the Admin Dashboard.
 // Talks directly to the Flask backend (JWT protected routes).
 // ==========================================================
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
 const MONTH_LABELS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
-
-// ----------------------------------------------------------
-// Low level fetch wrapper
-// Adds JWT auth header + normalizes error handling
-// ----------------------------------------------------------
-async function request(endpoint, options = {}) {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-
-  let body = null;
-  try {
-    body = await res.json();
-  } catch {
-    // no JSON body
-  }
-
-  if (!res.ok || (body && body.success === false)) {
-    const message = body?.message || `Request failed (${res.status})`;
-    throw new Error(message);
-  }
-
-  return body?.data ?? body;
-}
 
 // ----------------------------------------------------------
 // Core dashboard stats -> GET /api/dashboard/

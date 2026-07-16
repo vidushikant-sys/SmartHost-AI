@@ -1,102 +1,134 @@
-import { useState } from "react";
-
-import DashboardLayout from "../../layouts/DashboardLayout";
-
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/layout/DashboardLayout";
 import StudentStats from "../../components/student/StudentStats";
 import StudentFilters from "../../components/student/StudentFilters";
-
+import StudentTable from "../../components/student/StudentTable";
+import DeleteStudentModal from "../../components/student/DeleteStudentModal";
+import { getAllStudents, deleteStudent } from "../../services/studentService";
 import "../../styles/student.css";
 
-export default function StudentList() {
+const PAGE_SIZE = 8;
 
-    const [search, setSearch] = useState("");
+function StudentList() {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
-    const [filters, setFilters] = useState({
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("All");
+  const [page, setPage] = useState(1);
 
-        status: "",
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
-        course: "",
+  const navigate = useNavigate();
 
-        semester: ""
+  function loadStudents() {
+    setLoading(true);
+    getAllStudents()
+      .then((data) => setStudents(data || []))
+      .catch((err) => setErrorMsg(err.message || "Failed to load students"))
+      .finally(() => setLoading(false));
+  }
 
+  useEffect(() => {
+    loadStudents();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return students.filter((s) => {
+      const matchesSearch =
+        !q ||
+        s.full_name?.toLowerCase().includes(q) ||
+        s.email?.toLowerCase().includes(q) ||
+        s.phone?.includes(q);
+      const matchesStatus = status === "All" || s.status === status;
+      return matchesSearch && matchesStatus;
     });
+  }, [students, search, status]);
 
-    return (
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-        <DashboardLayout>
+  async function handleConfirmDelete() {
+    setDeleting(true);
+    try {
+      await deleteStudent(deleteTarget.id);
+      setDeleteTarget(null);
+      loadStudents();
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to delete student");
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
-            <div className="student-page">
+  return (
+    <DashboardLayout>
+      <div className="student-page">
+        <div className="student-page-header">
+          <div>
+            <h1>Students</h1>
+            <p className="student-page-subtitle">
+              Manage every student record across your hostels.
+            </p>
+          </div>
+          <button className="student-btn-primary" onClick={() => navigate("/students/add")}>
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Add Student
+          </button>
+        </div>
 
-                {/* =========================== */}
-                {/* Header */}
-                {/* =========================== */}
+        {errorMsg && <div className="student-page-error">{errorMsg}</div>}
 
-                <div className="student-header">
+        <StudentStats students={students} loading={loading} />
 
-                    <div>
+        <div className="student-panel">
+          <StudentFilters
+            search={search}
+            onSearchChange={(v) => { setSearch(v); setPage(1); }}
+            status={status}
+            onStatusChange={(v) => { setStatus(v); setPage(1); }}
+          />
 
-                        <h1>
+          <StudentTable
+            students={paginated}
+            loading={loading}
+            onDelete={setDeleteTarget}
+          />
 
-                            Student Management
-
-                        </h1>
-
-                    </div>
-
-                    <p>
-
-                        Manage all hostel students from one place.
-
-                    </p>
-
-                </div>
-
-                {/* =========================== */}
-                {/* Statistics */}
-                {/* =========================== */}
-
-                <StudentStats />
-
-                {/* =========================== */}
-                {/* Filters */}
-                {/* =========================== */}
-
-                <StudentFilters
-
-                    search={search}
-
-                    setSearch={setSearch}
-
-                    filters={filters}
-
-                    setFilters={setFilters}
-
-                />
-
-                {/* =========================== */}
-                {/* Demo Card */}
-                {/* =========================== */}
-
-                <div className="student-card">
-
-                    <h2>
-
-                        Student Module
-
-                    </h2>
-
-                    <p>
-
-                        Student Management module has been successfully connected.
-
-                    </p>
-
-                </div>
-
+          {!loading && filtered.length > 0 && (
+            <div className="student-pagination">
+              <span>
+                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+              </span>
+              <div className="student-pagination-btns">
+                <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                  Prev
+                </button>
+                <span className="student-page-indicator">{page} / {totalPages}</span>
+                <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
+                  Next
+                </button>
+              </div>
             </div>
+          )}
+        </div>
+      </div>
 
-        </DashboardLayout>
-
-    );
-
+      <DeleteStudentModal
+        student={deleteTarget}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+        deleting={deleting}
+      />
+    </DashboardLayout>
+  );
 }
+
+export default StudentList;

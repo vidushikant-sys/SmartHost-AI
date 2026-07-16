@@ -1,79 +1,34 @@
-import axios from "axios";
+import { request } from "./apiClient";
 
-// ==========================================
-// Base API URL
-// ==========================================
+// ==========================================================
+// studentService
+// Talks to GET/POST/PUT/DELETE /api/student/* on the backend.
+// ==========================================================
 
-const API_URL = "http://127.0.0.1:5000/api/student";
+export function getAllStudents() {
+  return request("/student/all");
+}
 
-// ==========================================
-// Get All Students
-// ==========================================
+export function getStudentById(id) {
+  return request(`/student/${id}`);
+}
 
-export const getAllStudents = async () => {
+export function createStudent(payload) {
+  return request("/student/add", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
-    const response = await axios.get(
-        `${API_URL}/all`
-    );
+export function updateStudent(id, payload) {
+  return request(`/student/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
 
-    return response.data;
-
-};
-
-// ==========================================
-// Get Student By ID
-// ==========================================
-
-export const getStudentById = async (id) => {
-
-    const response = await axios.get(
-        `${API_URL}/${id}`
-    );
-
-    return response.data;
-
-};
-
-// ==========================================
-// Add Student
-// ==========================================
-
-export const addStudent = async (studentData) => {
-
-    const response = await axios.post(
-        `${API_URL}/add`,
-        studentData
-    );
-
-    return response.data;
-
-};
-
-// ==========================================
-// Update Student
-// ==========================================
-
-export const updateStudent = async (id, studentData) => {
-
-    const response = await axios.put(
-        `${API_URL}/update/${id}`,
-        studentData
-    );
-
-    return response.data;
-
-};
-
-// ==========================================
-// Delete Student
-// ==========================================
-
-export const deleteStudent = async (id) => {
-
-    const response = await axios.delete(
-        `${API_URL}/delete/${id}`
-    );
-
-    return response.data;
-
-};
+export function deleteStudent(id) {
+  return request(`/student/delete/${id}`, {
+    method: "DELETE",
+  });
+}

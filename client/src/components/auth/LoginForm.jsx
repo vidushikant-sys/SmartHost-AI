@@ -88,12 +88,20 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await login(form);
-      saveToken(res.token);
-      localStorage.setItem("admin", JSON.stringify(res.admin));
+      const res = await login({
+        email: form.email.trim(),
+        password: form.password,
+      });
+      const token = res?.token || res?.access_token;
+      if (!token) {
+        throw new Error("Login response did not include a token.");
+      }
+      saveToken(token);
+      localStorage.setItem("admin", JSON.stringify(res.admin || {}));
       navigate("/dashboard");
     } catch (error) {
-      alert(error?.response?.data?.message || "Login Failed");
+      const message = error?.message || "Login Failed";
+      alert(message);
     } finally {
       setLoading(false);
     }
