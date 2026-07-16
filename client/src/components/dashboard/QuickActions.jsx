@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const ACTIONS = [
   {
     label: "Add Student",
-    path: "/students/new",
+    path: "/students/add",
     color: { bg: "rgba(37, 99, 235, 0.1)", fg: "#2563EB" },
     icon: (
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM19 8v6M22 11h-6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />

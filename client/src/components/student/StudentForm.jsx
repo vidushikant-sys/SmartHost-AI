@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "../ui/InputField";
+import { uploadStudentFile } from "../../services/studentService";
+import { resolveFileUrl } from "../../services/apiClient";
 
 // ==========================================================
 // StudentForm
@@ -32,6 +34,8 @@ const EMPTY_FORM = {
   city: "",
   state: "",
   pincode: "",
+  profile_photo: "",
+  id_proof: "",
   admission_date: "",
   status: "Active",
 };
@@ -41,6 +45,8 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState({ profile_photo: false, id_proof: false });
+  const [uploadError, setUploadError] = useState({ profile_photo: "", id_proof: "" });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +58,23 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
+  }
+
+  async function handleFileChange(field, e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError((u) => ({ ...u, [field]: "" }));
+    setUploading((u) => ({ ...u, [field]: true }));
+    try {
+      const path = await uploadStudentFile(file);
+      setForm((f) => ({ ...f, [field]: path }));
+    } catch (err) {
+      setUploadError((u) => ({ ...u, [field]: err.message || "Upload failed" }));
+    } finally {
+      setUploading((u) => ({ ...u, [field]: false }));
+      e.target.value = "";
+    }
   }
 
   async function handleSubmit(e) {
@@ -98,6 +121,76 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
         <div className="student-form-section-header">
           <span className="student-form-section-num">2</span>
           <div>
+            <h3>Documents</h3>
+            <p>Profile photo and ID proof (Aadhaar / College ID, etc.).</p>
+          </div>
+        </div>
+        <div className="student-form-grid">
+          <div className="student-upload-field">
+            <span className="student-upload-label">Profile Photo</span>
+            <div className="student-upload-box">
+              {form.profile_photo ? (
+                <img
+                  src={resolveFileUrl(form.profile_photo)}
+                  alt="Profile preview"
+                  className="student-upload-preview"
+                />
+              ) : (
+                <span className="student-upload-placeholder">No photo</span>
+              )}
+              <label className="student-btn-secondary student-upload-btn">
+                {uploading.profile_photo ? "Uploading..." : form.profile_photo ? "Replace" : "Upload"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  hidden
+                  disabled={uploading.profile_photo}
+                  onChange={(e) => handleFileChange("profile_photo", e)}
+                />
+              </label>
+            </div>
+            {uploadError.profile_photo && (
+              <span className="student-field-error">{uploadError.profile_photo}</span>
+            )}
+          </div>
+
+          <div className="student-upload-field">
+            <span className="student-upload-label">ID Proof</span>
+            <div className="student-upload-box">
+              {form.id_proof ? (
+                <a
+                  href={resolveFileUrl(form.id_proof)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="student-upload-doc-link"
+                >
+                  View uploaded document
+                </a>
+              ) : (
+                <span className="student-upload-placeholder">No document</span>
+              )}
+              <label className="student-btn-secondary student-upload-btn">
+                {uploading.id_proof ? "Uploading..." : form.id_proof ? "Replace" : "Upload"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  hidden
+                  disabled={uploading.id_proof}
+                  onChange={(e) => handleFileChange("id_proof", e)}
+                />
+              </label>
+            </div>
+            {uploadError.id_proof && (
+              <span className="student-field-error">{uploadError.id_proof}</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="student-form-section">
+        <div className="student-form-section-header">
+          <span className="student-form-section-num">3</span>
+          <div>
             <h3>Guardian Details</h3>
             <p>Emergency and parent/guardian contact info.</p>
           </div>
@@ -111,7 +204,7 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
 
       <div className="student-form-section">
         <div className="student-form-section-header">
-          <span className="student-form-section-num">3</span>
+          <span className="student-form-section-num">4</span>
           <div>
             <h3>Education Details</h3>
             <p>Where and what the student is studying.</p>
@@ -126,7 +219,7 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
 
       <div className="student-form-section">
         <div className="student-form-section-header">
-          <span className="student-form-section-num">4</span>
+          <span className="student-form-section-num">5</span>
           <div>
             <h3>Address Details</h3>
             <p>Permanent home address of the student.</p>
@@ -144,7 +237,7 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
 
       <div className="student-form-section">
         <div className="student-form-section-header">
-          <span className="student-form-section-num">5</span>
+          <span className="student-form-section-num">6</span>
           <div>
             <h3>Hostel Details</h3>
             <p>Admission date and current status.</p>

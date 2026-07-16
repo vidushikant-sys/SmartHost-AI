@@ -9,6 +9,9 @@ function StudentStats({ students = [], loading }) {
   const active = students.filter((s) => s.status === "Active").length;
   const inactive = students.filter((s) => s.status === "Inactive").length;
   const left = students.filter((s) => s.status === "Left").length;
+  const feeDue = students.filter(
+    (s) => s.fee_status === "Unpaid" || s.fee_status === "Partial"
+  ).length;
 
   const CARDS = [
     {
@@ -41,6 +44,14 @@ function StudentStats({ students = [], loading }) {
       color: "purple",
       icon: (
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      ),
+    },
+    {
+      label: "Fee Due",
+      value: feeDue,
+      color: "red",
+      icon: (
+        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       ),
     },
   ];

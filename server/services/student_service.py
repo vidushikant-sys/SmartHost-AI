@@ -86,14 +86,16 @@ def get_fee_information(student_id):
 
 
 #==================================================
-# Complaint Count
+# Complaint Summary (Total / Open / Resolved)
 # ==================================================
 
-def get_complaint_count(student_id):
+def get_complaint_summary(student_id):
 
-    return (
+    rows = (
 
         db.session.query(
+
+            Complaint.status,
 
             func.count(Complaint.id)
 
@@ -105,11 +107,35 @@ def get_complaint_count(student_id):
 
         )
 
-        .scalar()
+        .group_by(
 
-        or 0
+            Complaint.status
+
+        )
+
+        .all()
 
     )
+
+    counts = {status: count for status, count in rows}
+
+    total = sum(counts.values())
+
+    resolved = counts.get("Resolved", 0)
+
+    # "Open" bucket covers both "Open" and "In Progress" tickets —
+    # anything that hasn't reached "Resolved" yet.
+    open_count = total - resolved
+
+    return {
+
+        "total": total,
+
+        "open": open_count,
+
+        "resolved": resolved
+
+    }
 # ==================================================
 # Student To Dictionary (Enhanced)
 # ==================================================
@@ -120,7 +146,7 @@ def student_to_dict(student):
 
     fee = get_fee_information(student.id)
 
-    complaint_count = get_complaint_count(student.id)
+    complaints = get_complaint_summary(student.id)
 
     hostel_name = None
     room_number = None
@@ -232,7 +258,11 @@ def student_to_dict(student):
         # Complaint
         # ======================================
 
-        "complaint_count": complaint_count,
+        "complaint_count": complaints["total"],
+
+        "complaint_open": complaints["open"],
+
+        "complaint_resolved": complaints["resolved"],
 
         # ======================================
         # Status
