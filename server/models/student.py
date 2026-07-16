@@ -30,6 +30,12 @@ class Student(db.Model):
 
             "guardian_phone": self.guardian_phone,
 
+            "emergency_contact": self.emergency_contact,
+
+            "profile_photo": self.profile_photo,
+
+            "id_proof": self.id_proof,
+
             "address": self.address,
 
             "city": self.city,

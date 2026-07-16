@@ -9,7 +9,7 @@
   --radius-lg: 18px;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 28px 32px 56px;
+  padding: 28px 32px 32px;
 }
 
 /* ==========================================================
@@ -131,7 +131,7 @@
 ========================================================== */
 .student-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 18px;
   margin-bottom: 22px;
 }
@@ -171,6 +171,7 @@
 .student-stat-card.stat-green .student-stat-icon { background: rgba(34, 197, 94, 0.1); color: #16803C; }
 .student-stat-card.stat-amber .student-stat-icon { background: rgba(245, 158, 11, 0.12); color: #B45309; }
 .student-stat-card.stat-purple .student-stat-icon { background: rgba(139, 92, 246, 0.1); color: #7C3AED; }
+.student-stat-card.stat-red .student-stat-icon { background: rgba(239, 68, 68, 0.1); color: #B91C1C; }
 
 .student-stat-value {
   font-size: 22px;
@@ -738,7 +739,7 @@
    Responsive
 ========================================================== */
 @media (max-width: 1180px) {
-  .student-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .student-stats-grid { grid-template-columns: repeat(3, 1fr); }
   .student-form-grid { grid-template-columns: 1fr; }
   .student-form-grid-2col { grid-template-columns: 1fr; }
   .student-profile-grid { grid-template-columns: 1fr; }
@@ -765,4 +766,112 @@
   .student-profile-header { flex-direction: column; text-align: center; }
   .student-profile-actions { width: 100%; }
   .student-profile-actions button { flex: 1; }
+}
+
+/* ==========================================================
+   Photo avatars (table row + profile header)
+========================================================== */
+.student-avatar-img,
+.student-profile-avatar-img {
+  object-fit: cover;
+}
+
+/* ==========================================================
+   Document / photo upload fields (StudentForm — Documents section)
+========================================================== */
+.student-upload-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.student-upload-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.student-upload-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: #FAFBFD;
+}
+
+.student-upload-preview {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.student-upload-placeholder {
+  font-size: 13px;
+  color: var(--text-light);
+  flex: 1;
+}
+
+.student-upload-doc-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563EB;
+  flex: 1;
+  text-decoration: underline;
+}
+
+.student-upload-btn {
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 12.5px;
+  padding: 8px 14px;
+}
+
+.student-field-error {
+  font-size: 12px;
+  color: #B91C1C;
+  font-weight: 500;
+}
+
+/* ==========================================================
+   Document link inside the read-only profile view
+========================================================== */
+.student-profile-doc-link {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2563EB;
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   Dot-style status badges (Fee / Allocation) — bigger, rounder,
+   with a small colored indicator glyph before the label.
+========================================================== */
+.student-badge-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+/* ==========================================================
+   Profile header — student code line + tighter photo crop
+========================================================== */
+.student-profile-code {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-light);
+  letter-spacing: 0.02em;
+}
+
+.student-avatar-img,
+.student-profile-avatar-img {
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
 }

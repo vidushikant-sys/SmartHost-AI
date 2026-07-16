@@ -38,6 +38,8 @@ function StudentTable({ students, loading, onDelete }) {
             <th>Student</th>
             <th>Contact</th>
             <th>Course</th>
+            <th>Hostel / Room</th>
+            <th>Fee</th>
             <th>Guardian</th>
             <th>Status</th>
             <th></th>
