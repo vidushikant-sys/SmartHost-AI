@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import DashboardLayout from "../../components/layout/DashboardLayout";
 import HostelStats from "../../components/hostel/HostelStats";
 import HostelFilters from "../../components/hostel/HostelFilters";
 import HostelTable from "../../components/hostel/HostelTable";
@@ -101,54 +102,59 @@ export default function HostelList() {
   }
 
   return (
-    <div className="hostel-page">
-      <div className="hostel-page__header">
-        <div>
-          <h1>Hostels</h1>
-          <p>Manage every listed hostel — capacity, pricing, and details, all in one place.</p>
-        </div>
-        <Link to="/hostels/add" className="btn btn--primary">
-          + Add Hostel
-        </Link>
-      </div>
-
-      {banner && (
-        <div className={`hostel-banner hostel-banner--${banner.type}`}>{banner.message}</div>
-      )}
-
-      <HostelStats hostels={hostels} />
-
-      <div className="hostel-page__panel">
-        <HostelFilters
-          filters={filters}
-          onChange={setFilters}
-          onReset={() => setFilters(DEFAULT_FILTERS)}
-        />
-
-        {loadError ? (
-          <div className="hostel-table__state hostel-table__state--empty">
-            <p>{loadError}</p>
-            <button type="button" className="btn btn--ghost" onClick={fetchHostels}>
-              Try again
-            </button>
+    <DashboardLayout>
+      <div className="hostel-page">
+        <div className="hostel-page__header">
+          <div>
+            <h1>Hostels</h1>
+            <p>Manage every listed hostel — capacity, pricing, and details, all in one place.</p>
           </div>
-        ) : (
-          <HostelTable
-            hostels={filteredHostels}
-            loading={loading}
-            onView={handleView}
-            onEdit={handleEdit}
-            onDeleteRequest={setDeleteTarget}
-          />
-        )}
-      </div>
+          <Link to="/hostels/add" className="btn btn--primary">
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Add Hostel
+          </Link>
+        </div>
 
-      <DeleteHostelModal
-        hostel={deleteTarget}
-        deleting={deleting}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={handleConfirmDelete}
-      />
-    </div>
+        {banner && (
+          <div className={`hostel-banner hostel-banner--${banner.type}`}>{banner.message}</div>
+        )}
+
+        <HostelStats hostels={hostels} />
+
+        <div className="hostel-page__panel">
+          <HostelFilters
+            filters={filters}
+            onChange={setFilters}
+            onReset={() => setFilters(DEFAULT_FILTERS)}
+          />
+
+          {loadError ? (
+            <div className="hostel-table__state hostel-table__state--empty">
+              <p>{loadError}</p>
+              <button type="button" className="btn btn--ghost" onClick={fetchHostels}>
+                Try again
+              </button>
+            </div>
+          ) : (
+            <HostelTable
+              hostels={filteredHostels}
+              loading={loading}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDeleteRequest={setDeleteTarget}
+            />
+          )}
+        </div>
+
+        <DeleteHostelModal
+          hostel={deleteTarget}
+          deleting={deleting}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      </div>
+    </DashboardLayout>
   );
 }

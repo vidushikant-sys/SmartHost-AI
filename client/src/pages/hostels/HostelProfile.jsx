@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import DashboardLayout from "../../components/layout/DashboardLayout";
 import DeleteHostelModal from "../../components/hostel/DeleteHostelModal";
 import { getHostelById, deleteHostel } from "../../services/hostelService";
 import "../../styles/hostel.css";
@@ -59,29 +60,34 @@ export default function HostelProfile() {
 
   if (loading) {
     return (
-      <div className="hostel-page">
-        <div className="hostel-table__state">
-          <div className="hostel-spinner" aria-hidden="true" />
-          <p>Loading hostel...</p>
+      <DashboardLayout>
+        <div className="hostel-page">
+          <div className="hostel-table__state">
+            <div className="hostel-spinner" aria-hidden="true" />
+            <p>Loading hostel...</p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   if (loadError || !hostel) {
     return (
-      <div className="hostel-page">
-        <div className="hostel-table__state hostel-table__state--empty">
-          <p>{loadError || "Hostel not found."}</p>
-          <Link to="/hostels" className="btn btn--ghost">
-            Back to Hostels
-          </Link>
+      <DashboardLayout>
+        <div className="hostel-page">
+          <div className="hostel-table__state hostel-table__state--empty">
+            <p>{loadError || "Hostel not found."}</p>
+            <Link to="/hostels" className="btn btn--ghost">
+              Back to Hostels
+            </Link>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
+    <DashboardLayout>
     <div className="hostel-page">
       <Link to="/hostels" className="hostel-breadcrumb-back">
         ← Back to Hostels
@@ -168,5 +174,6 @@ export default function HostelProfile() {
         onConfirm={handleConfirmDelete}
       />
     </div>
+    </DashboardLayout>
   );
 }

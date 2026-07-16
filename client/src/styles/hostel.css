@@ -2,43 +2,45 @@
    Hostel Module — Stylesheet
    Scope: everything is namespaced under `.hostel-*` classes so this can be
    dropped into an existing dashboard without leaking styles.
-   Design: deep denim-blue + warm gold accent, "Sora" display type paired
-   with "Inter" body type. Each hostel_type gets its own accent color, used
-   consistently as a small dot + badge across the table and profile view —
-   a light, scannable way to tell hostel categories apart at a glance.
+   Design: matches the Student module's shared theme — the app's Poppins
+   type + blue primary palette (see styles/variables.css) — so the two
+   modules feel like one product. Each hostel_type still gets its own
+   accent color, used as a small dot + badge across the table and profile
+   view, as a light, scannable way to tell hostel categories apart.
    ========================================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+@import "./variables.css";
 
 .hostel-page {
-  --hostel-ink: #16202a;
-  --hostel-muted: #5b6b7c;
-  --hostel-bg: #f5f7fa;
-  --hostel-surface: #ffffff;
-  --hostel-border: #e3e8ef;
-  --hostel-border-soft: #edf1f5;
+  --hostel-ink: var(--text, #1e293b);
+  --hostel-muted: var(--text-light, #64748b);
+  --hostel-bg: var(--background, #f8fafc);
+  --hostel-surface: var(--white, #ffffff);
+  --hostel-border: #e7ebf3;
+  --hostel-border-soft: #eef2f8;
 
-  --hostel-primary: #2b4c7e;
-  --hostel-primary-dark: #1f3a63;
-  --hostel-primary-soft: #eaf1fb;
+  --hostel-primary: var(--primary, #2563eb);
+  --hostel-primary-dark: var(--primary-dark, #1d4ed8);
+  --hostel-primary-soft: rgba(37, 99, 235, 0.1);
 
   --hostel-accent: #d99a2b;
   --hostel-accent-soft: #fbf1de;
 
-  --hostel-danger: #c0392b;
-  --hostel-danger-soft: #fdecea;
-  --hostel-success: #1f8a5f;
-  --hostel-success-soft: #e6f5ef;
+  --hostel-danger: var(--danger, #ef4444);
+  --hostel-danger-soft: #fef2f2;
+  --hostel-success: var(--success, #22c55e);
+  --hostel-success-soft: rgba(34, 197, 94, 0.12);
 
-  --hostel-radius-sm: 8px;
+  --hostel-radius-sm: 11px;
   --hostel-radius-md: 12px;
   --hostel-radius-lg: 18px;
-  --hostel-shadow: 0 1px 2px rgba(22, 32, 42, 0.04), 0 8px 24px -12px rgba(22, 32, 42, 0.12);
+  --hostel-shadow: var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.08));
 
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: inherit;
   color: var(--hostel-ink);
-  background: var(--hostel-bg);
-  padding: 28px clamp(16px, 4vw, 40px) 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px 60px;
   min-height: 100%;
   box-sizing: border-box;
 }
@@ -52,7 +54,7 @@
 .hostel-page h1,
 .hostel-page h2,
 .hostel-page h3 {
-  font-family: "Sora", "Inter", sans-serif;
+  font-family: inherit;
   color: var(--hostel-ink);
   margin: 0;
 }
