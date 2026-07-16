@@ -1,11 +1,33 @@
-import api from "./api";
+import { request } from "./apiClient";
 
-export const login = async (credentials) => {
-  const response = await api.post("/auth/login", credentials);
-  return response.data;
-};
+// ==========================================================
+// authService
+// Talks to GET/POST /api/auth/* on the Flask backend.
+// ==========================================================
 
-export const getProfile = async () => {
-  const response = await api.get("/auth/profile");
-  return response.data;
-};
+export function login(emailOrPayload, password) {
+  const payload =
+    typeof emailOrPayload === "object" && emailOrPayload !== null
+      ? emailOrPayload
+      : { email: emailOrPayload, password };
+
+  return request("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function loginRequest(email, password) {
+  return login(email, password);
+}
+
+export function registerRequest(payload) {
+  return request("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function fetchProfile() {
+  return request("/auth/profile");
+}

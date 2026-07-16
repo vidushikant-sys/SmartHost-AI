@@ -1,65 +1,34 @@
-import axios from "axios";
+import { request } from "./apiClient";
 
-const API = axios.create({
+// ==========================================================
+// studentService
+// Talks to GET/POST/PUT/DELETE /api/student/* on the backend.
+// ==========================================================
 
-    baseURL: "http://127.0.0.1:5000/api"
+export function getAllStudents() {
+  return request("/student/all");
+}
 
-});
+export function getStudentById(id) {
+  return request(`/student/${id}`);
+}
 
-// ================================
-// Get JWT Token
-// ================================
+export function createStudent(payload) {
+  return request("/student/add", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
 
-API.interceptors.request.use((config) => {
+export function updateStudent(id, payload) {
+  return request(`/student/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
 
-    const token = localStorage.getItem("token");
-
-    if (token) {
-
-        config.headers.Authorization = `Bearer ${token}`;
-
-    }
-
-    return config;
-
-});
-
-// ================================
-// Get All Students
-// ================================
-
-export const getAllStudents = () =>
-
-    API.get("/student/all");
-
-// ================================
-// Get Student By Id
-// ================================
-
-export const getStudentById = (id) =>
-
-    API.get(`/student/${id}`);
-
-// ================================
-// Create Student
-// ================================
-
-export const createStudent = (data) =>
-
-    API.post("/student/create", data);
-
-// ================================
-// Update Student
-// ================================
-
-export const updateStudent = (id, data) =>
-
-    API.put(`/student/update/${id}`, data);
-
-// ================================
-// Delete Student
-// ================================
-
-export const deleteStudent = (id) =>
-
-    API.delete(`/student/delete/${id}`);
+export function deleteStudent(id) {
+  return request(`/student/delete/${id}`, {
+    method: "DELETE",
+  });
+}

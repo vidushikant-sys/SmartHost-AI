@@ -1,48 +1,58 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { getProfile } from "../services/authService";
-import { getToken, removeToken } from "../utils/token";
+import { createContext, useContext, useState } from "react";
+import { loginRequest } from "../services/authService";
 
-const AuthContext = createContext();
+// ==========================================================
+// AuthContext
+// Provides { admin, token, isAuthenticated, login, logout }
+// to the whole app. Wrap <AppRoutes> with <AuthProvider>.
+// ==========================================================
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+const AuthContext = createContext(null);
 
-  const loadUser = async () => {
-    const token = getToken();
-
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await getProfile(token);
-      setUser(res.data.admin);
-    } catch (error) {
-      removeToken();
-      setUser(null);
-    }
-
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        setUser,
-        loading,
-        reloadUser: loadUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+function readStoredAdmin() {
+  try {
+    const raw = localStorage.getItem("admin");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function AuthProvider({ children }) {
+  const [admin, setAdmin] = useState(readStoredAdmin);
+  const [token, setToken] = useState(() => localStorage.getItem("token"));
+
+  async function login(email, password) {
+    const data = await loginRequest(email, password); // throws on invalid creds
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("admin", JSON.stringify(data.admin));
+    setToken(data.token);
+    setAdmin(data.admin);
+    return data;
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("admin");
+    setToken(null);
+    setAdmin(null);
+  }
+
+  const value = {
+    admin,
+    token,
+    isAuthenticated: !!token,
+    login,
+    logout,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used within an <AuthProvider>");
+  }
+  return ctx;
+}

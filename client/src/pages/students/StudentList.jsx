@@ -1,373 +1,134 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
-
-import DashboardLayout from "../../layouts/DashboardLayout";
-
+import DashboardLayout from "../../components/layout/DashboardLayout";
 import StudentStats from "../../components/student/StudentStats";
 import StudentFilters from "../../components/student/StudentFilters";
 import StudentTable from "../../components/student/StudentTable";
-
-import {
-
-    getAllStudents
-
-} from "../../services/studentService";
-
+import DeleteStudentModal from "../../components/student/DeleteStudentModal";
+import { getAllStudents, deleteStudent } from "../../services/studentService";
 import "../../styles/student.css";
-export default function StudentList() {
 
-    const navigate = useNavigate();
+const PAGE_SIZE = 8;
 
-    const [students, setStudents] = useState([]);
+function StudentList() {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
-    const [filteredStudents, setFilteredStudents] = useState([]);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("All");
+  const [page, setPage] = useState(1);
 
-    const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
-    const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
-    const [filters, setFilters] = useState({
+  function loadStudents() {
+    setLoading(true);
+    getAllStudents()
+      .then((data) => setStudents(data || []))
+      .catch((err) => setErrorMsg(err.message || "Failed to load students"))
+      .finally(() => setLoading(false));
+  }
 
-        course: "",
+  useEffect(() => {
+    loadStudents();
+  }, []);
 
-        semester: "",
-
-        status: ""
-
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return students.filter((s) => {
+      const matchesSearch =
+        !q ||
+        s.full_name?.toLowerCase().includes(q) ||
+        s.email?.toLowerCase().includes(q) ||
+        s.phone?.includes(q);
+      const matchesStatus = status === "All" || s.status === status;
+      return matchesSearch && matchesStatus;
     });
+  }, [students, search, status]);
 
-    useEffect(() => {
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-        loadStudents();
-
-    }, []);
-
-    useEffect(() => {
-
-        filterStudents();
-
-    }, [
-
-        students,
-
-        search,
-
-        filters
-
-    ]);
-
-    const loadStudents = async () => {
-
-        try {
-
-            const response = await getAllStudents();
-
-const data = response.data.data || [];
-console.log(data);
-console.log(Array.isArray(data));
-            setStudents(data);
-
-            setFilteredStudents(data);
-
-        }
-
-        catch (error) {
-
-            console.log(error);
-
-        }
-
-        finally {
-
-            setLoading(false);
-
-        }
-
-    };
-    // =====================================
-// Filter Students
-// =====================================
-
-const filterStudents = () => {
-
-    let data = [...students];
-
-    // Search
-
-    if (search.trim() !== "") {
-
-        data = data.filter((student) =>
-
-            student.full_name
-                ?.toLowerCase()
-                .includes(search.toLowerCase())
-
-            ||
-
-            student.email
-                ?.toLowerCase()
-                .includes(search.toLowerCase())
-
-            ||
-
-            student.phone
-                ?.includes(search)
-
-        );
-
+  async function handleConfirmDelete() {
+    setDeleting(true);
+    try {
+      await deleteStudent(deleteTarget.id);
+      setDeleteTarget(null);
+      loadStudents();
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to delete student");
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
     }
+  }
 
-    // Course
-
-    if (filters.course !== "") {
-
-        data = data.filter(
-
-            student =>
-
-                student.course === filters.course
-
-        );
-
-    }
-
-    // Semester
-
-    if (filters.semester !== "") {
-
-        data = data.filter(
-
-            student =>
-
-                String(student.semester) ===
-
-                String(filters.semester)
-
-        );
-
-    }
-
-    // Status
-
-    if (filters.status !== "") {
-
-        data = data.filter(
-
-            student =>
-
-                student.status === filters.status
-
-        );
-
-    }
-
-    setFilteredStudents(data);
-
-};
-
-// =====================================
-// Actions
-// =====================================
-
-const handleView = (student) => {
-
-    navigate(
-
-        `/students/profile/${student.id}`
-
-    );
-
-};
-
-const handleEdit = (student) => {
-
-    navigate(
-
-        `/students/edit/${student.id}`
-
-    );
-
-};
-
-const handleDelete = (student) => {
-
-    const confirmDelete = window.confirm(
-
-        `Delete ${student.full_name}?`
-
-    );
-
-    if (confirmDelete) {
-
-        alert(
-
-            "Delete functionality will be connected in next phase."
-
-        );
-
-    }
-
-};
-
-// =====================================
-// UI
-// =====================================
-
-return (
-
+  return (
     <DashboardLayout>
+      <div className="student-page">
+        <div className="student-page-header">
+          <div>
+            <h1>Students</h1>
+            <p className="student-page-subtitle">
+              Manage every student record across your hostels.
+            </p>
+          </div>
+          <button className="student-btn-primary" onClick={() => navigate("/students/add")}>
+            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Add Student
+          </button>
+        </div>
 
-        <div className="student-page">
+        {errorMsg && <div className="student-page-error">{errorMsg}</div>}
 
-            {/* ======================== */}
-            {/* Header */}
-            {/* ======================== */}
+        <StudentStats students={students} loading={loading} />
 
-            <div className="student-header">
+        <div className="student-panel">
+          <StudentFilters
+            search={search}
+            onSearchChange={(v) => { setSearch(v); setPage(1); }}
+            status={status}
+            onStatusChange={(v) => { setStatus(v); setPage(1); }}
+          />
 
-                <div>
+          <StudentTable
+            students={paginated}
+            loading={loading}
+            onDelete={setDeleteTarget}
+          />
 
-                    <h1>
-
-                        Student Management
-
-                    </h1>
-
-                    <p>
-
-                        Manage all hostel students from one place.
-
-                    </p>
-
-                </div>
-<button
-
-    className="add-student-btn"
-
-    onClick={() => navigate("/students/add")}
-
->
-
-    <FaPlus />
-
-    Add Student
-
-</button>
+          {!loading && filtered.length > 0 && (
+            <div className="student-pagination">
+              <span>
+                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}
+              </span>
+              <div className="student-pagination-btns">
+                <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                  Prev
+                </button>
+                <span className="student-page-indicator">{page} / {totalPages}</span>
+                <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
+                  Next
+                </button>
+              </div>
             </div>
-                        {/* ======================== */}
-            {/* Statistics */}
-            {/* ======================== */}
+          )}
+        </div>
+      </div>
 
-            <StudentStats
-
-                students={students}
-
-            />
-
-            {/* ======================== */}
-            {/* Search & Filters */}
-            {/* ======================== */}
-
-            <StudentFilters
-
-                search={search}
-
-                setSearch={setSearch}
-
-                filters={filters}
-
-                setFilters={setFilters}
-
-            />
-
-            {/* ======================== */}
-            {/* Students Table */}
-            {/* ======================== */}
-
-            <div className="student-table-wrapper">
-
-                {
-
-                    loading
-
-                    ?
-
-                    (
-
-                        <div className="student-loading">
-
-                            Loading students...
-
-                        </div>
-
-                    )
-
-                    :
-
-                    (
-
-                        <StudentTable
-
-                            students={filteredStudents}
-
-                            loading={loading}
-
-                            onView={handleView}
-
-                            onEdit={handleEdit}
-
-                            onDelete={handleDelete}
-
-                        />
-
-                    )
-
-                }
-
-            </div>
-
-            {/* ======================== */}
-            {/* Footer */}
-            {/* ======================== */}
-
-            <div className="student-footer">
-
-                <span>
-
-                    Showing
-
-                    {" "}
-
-                    <strong>
-
-                        {filteredStudents.length}
-
-                    </strong>
-
-                    {" "}
-
-                    of
-
-                    {" "}
-
-                    <strong>
-
-                        {students.length}
-
-                    </strong>
-
-                    {" "}
-
-                    Students
-
-                </span>
-
-            </div>
-                    </div>
-
+      <DeleteStudentModal
+        student={deleteTarget}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+        deleting={deleting}
+      />
     </DashboardLayout>
-
-);
-
+  );
 }
+
+export default StudentList;

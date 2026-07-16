@@ -1,265 +1,56 @@
-import { useNavigate } from "react-router-dom";
-import {
-  FaEye,
-  FaEdit,
-  FaTrash,
-  FaBed,
-  FaUserGraduate,
-} from "react-icons/fa";
+import StudentRow from "./StudentRow";
 
-function StudentTable({
-  students = [],
-  loading = false,
-  onView,
-  onEdit,
-  onDelete,
-}) {
-    
+// ==========================================================
+// StudentTable
+// Renders the table header + one StudentRow per student.
+// Handles its own loading skeleton / empty state.
+// ==========================================================
 
+function StudentTable({ students, loading, onDelete }) {
   if (loading) {
     return (
-      <div className="student-table-card">
-
-        <div className="table-loading">
-          Loading students...
-        </div>
-
+      <div className="student-table-wrap">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="student-skeleton-row" />
+        ))}
       </div>
     );
   }
 
-  if (students.length === 0) {
+  if (!students || students.length === 0) {
     return (
-      <div className="student-table-card">
-
-        <div className="table-empty">
-
-          <FaUserGraduate className="empty-icon" />
-
-          <h3>No Students Found</h3>
-
-          <p>
-            Click Add Student to create your first record.
-          </p>
-
+      <div className="student-table-wrap">
+        <div className="student-empty-state">
+          <svg viewBox="0 0 24 24" fill="none" width="40" height="40">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <p>No students found. Try adjusting your search or add a new student.</p>
         </div>
-
       </div>
     );
   }
 
   return (
-
-    <div className="student-table-card">
-
-      <div className="student-table-header">
-
-        <div>
-          <h3>Students List</h3>
-          <p>
-            Showing {students.length} Students
-          </p>
-        </div>
-
-      </div>
-
-      <div className="table-responsive">
-
-        <table className="student-table">
-
-          <thead>
-
-            <tr>
-
-              <th>Photo</th>
-
-              <th>Student</th>
-
-              <th>Course</th>
-
-              <th>Year</th>
-
-              <th>Room</th>
-
-              <th>Phone</th>
-
-              <th>Status</th>
-
-              <th>Actions</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-        {
-          students.length === 0 ? (
-
-            <tr>
-
-              <td
-                colSpan="8"
-                className="no-data"
-              >
-                No Students Found
-              </td>
-
-            </tr>
-
-          ) : (
-
-            students.map((student) => (
-
-              <tr key={student.id}>
-
-                <td>
-
-                  <img
-                    src={
-                      student.profile_photo ||
-                      "https://ui-avatars.com/api/?name=" +
-                        encodeURIComponent(student.full_name)
-                    }
-                    alt={student.full_name}
-                    className="student-avatar"
-                  />
-
-                </td>
-
-                <td>
-
-                  <div className="student-info">
-
-                    <strong>
-                      {student.full_name}
-                    </strong>
-
-                    <span>
-                      #{student.registration_number}
-                    </span>
-
-                  </div>
-
-                </td>
-
-                <td>
-
-                  {student.course}
-
-                </td>
-
-                <td>
-
-                  {student.year}
-
-                </td>
-
-                <td>
-
-                  {
-                    student.room_number
-                      ? student.room_number
-                      : "--"
-                  }
-
-                </td>
-
-                <td>
-
-                  {student.phone}
-
-                </td>
-                {/* ========================= */}
-{/* Status */}
-{/* ========================= */}
-
-<td>
-
-    <span
-        className={
-            student.status === "Active"
-                ? "status-badge active"
-                : "status-badge inactive"
-        }
-    >
-        {student.status}
-    </span>
-
-</td>
-
-{/* ========================= */}
-{/* Actions */}
-{/* ========================= */}
-
-<td>
-
-    <div className="student-actions">
-
-        <button
-
-            className="action-btn view-btn"
-
-            title="View Student"
-
-            onClick={() => onView(student)}
-
-        >
-
-            <FaEye />
-
-        </button>
-
-        <button
-
-            className="action-btn edit-btn"
-
-            title="Edit Student"
-
-            onClick={() => onEdit(student)}
-
-        >
-
-            <FaEdit />
-
-        </button>
-
-        <button
-
-            className="action-btn delete-btn"
-
-            title="Delete Student"
-
-            onClick={() => onDelete(student)}
-
-        >
-
-            <FaTrash />
-
-        </button>
-
+    <div className="student-table-wrap">
+      <table className="student-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Contact</th>
+            <th>Course</th>
+            <th>Guardian</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((s) => (
+            <StudentRow key={s.id} student={s} onDelete={onDelete} />
+          ))}
+        </tbody>
+      </table>
     </div>
-
-</td>
-
-</tr>
-
-))
-
-)
-
-}
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-);
-
+  );
 }
 
 export default StudentTable;

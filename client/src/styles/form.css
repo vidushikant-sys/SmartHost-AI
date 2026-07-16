@@ -1,0 +1,68 @@
+@import "./variables.css";
+
+/* ==========================================================
+   Extends the existing .input-group (from login.css) with
+   select / textarea / error support. Safe to import anywhere
+   InputField.jsx is used.
+========================================================== */
+
+.input-group select,
+.input-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: var(--text);
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.input-group textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.input-group select:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.input-group input:disabled,
+.input-group select:disabled,
+.input-group textarea:disabled {
+  background: #F1F5F9;
+  cursor: not-allowed;
+  color: #94A3B8;
+}
+
+.required-mark {
+  color: var(--danger, #EF4444);
+}
+
+.input-group.has-error input,
+.input-group.has-error select,
+.input-group.has-error textarea {
+  border-color: var(--danger, #EF4444);
+}
+
+.field-error {
+  display: block;
+  font-size: 12px;
+  color: var(--danger, #EF4444);
+  margin-top: 5px;
+  font-weight: 500;
+}
