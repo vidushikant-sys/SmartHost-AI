@@ -1,0 +1,875 @@
+/* ============================================================================
+   Hostel Module — Stylesheet
+   Scope: everything is namespaced under `.hostel-*` classes so this can be
+   dropped into an existing dashboard without leaking styles.
+   Design: deep denim-blue + warm gold accent, "Sora" display type paired
+   with "Inter" body type. Each hostel_type gets its own accent color, used
+   consistently as a small dot + badge across the table and profile view —
+   a light, scannable way to tell hostel categories apart at a glance.
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+
+.hostel-page {
+  --hostel-ink: #16202a;
+  --hostel-muted: #5b6b7c;
+  --hostel-bg: #f5f7fa;
+  --hostel-surface: #ffffff;
+  --hostel-border: #e3e8ef;
+  --hostel-border-soft: #edf1f5;
+
+  --hostel-primary: #2b4c7e;
+  --hostel-primary-dark: #1f3a63;
+  --hostel-primary-soft: #eaf1fb;
+
+  --hostel-accent: #d99a2b;
+  --hostel-accent-soft: #fbf1de;
+
+  --hostel-danger: #c0392b;
+  --hostel-danger-soft: #fdecea;
+  --hostel-success: #1f8a5f;
+  --hostel-success-soft: #e6f5ef;
+
+  --hostel-radius-sm: 8px;
+  --hostel-radius-md: 12px;
+  --hostel-radius-lg: 18px;
+  --hostel-shadow: 0 1px 2px rgba(22, 32, 42, 0.04), 0 8px 24px -12px rgba(22, 32, 42, 0.12);
+
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--hostel-ink);
+  background: var(--hostel-bg);
+  padding: 28px clamp(16px, 4vw, 40px) 60px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.hostel-page *,
+.hostel-page *::before,
+.hostel-page *::after {
+  box-sizing: border-box;
+}
+
+.hostel-page h1,
+.hostel-page h2,
+.hostel-page h3 {
+  font-family: "Sora", "Inter", sans-serif;
+  color: var(--hostel-ink);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Header                                                                  */
+/* ---------------------------------------------------------------------- */
+
+.hostel-page__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.hostel-page__header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hostel-page__header p {
+  margin: 6px 0 0;
+  color: var(--hostel-muted);
+  font-size: 14.5px;
+  max-width: 52ch;
+}
+
+.hostel-breadcrumb-back {
+  display: inline-block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--hostel-muted);
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.hostel-breadcrumb-back:hover {
+  color: var(--hostel-primary);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Buttons                                                                 */
+/* ---------------------------------------------------------------------- */
+
+.hostel-page .btn {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--hostel-radius-sm);
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.hostel-page .btn:active {
+  transform: translateY(1px);
+}
+
+.hostel-page .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hostel-page .btn--primary {
+  background: var(--hostel-primary);
+  color: #fff;
+  box-shadow: 0 4px 12px -4px rgba(43, 76, 126, 0.55);
+}
+
+.hostel-page .btn--primary:hover:not(:disabled) {
+  background: var(--hostel-primary-dark);
+}
+
+.hostel-page .btn--secondary {
+  background: var(--hostel-primary-soft);
+  color: var(--hostel-primary-dark);
+}
+
+.hostel-page .btn--secondary:hover:not(:disabled) {
+  background: #dde9f9;
+}
+
+.hostel-page .btn--ghost {
+  background: var(--hostel-surface);
+  border-color: var(--hostel-border);
+  color: var(--hostel-ink);
+}
+
+.hostel-page .btn--ghost:hover:not(:disabled) {
+  border-color: var(--hostel-primary);
+  color: var(--hostel-primary);
+}
+
+.hostel-page .btn--danger {
+  background: var(--hostel-danger);
+  color: #fff;
+}
+
+.hostel-page .btn--danger:hover:not(:disabled) {
+  background: #a3301f;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Banner (success / error messages)                                      */
+/* ---------------------------------------------------------------------- */
+
+.hostel-banner {
+  padding: 12px 16px;
+  border-radius: var(--hostel-radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+}
+
+.hostel-banner--success {
+  background: var(--hostel-success-soft);
+  color: var(--hostel-success);
+  border-color: #bfe6d6;
+}
+
+.hostel-banner--error {
+  background: var(--hostel-danger-soft);
+  color: var(--hostel-danger);
+  border-color: #f3cac4;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Stats cards                                                            */
+/* ---------------------------------------------------------------------- */
+
+.hostel-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.hostel-stats__card {
+  background: var(--hostel-surface);
+  border: 1px solid var(--hostel-border);
+  border-radius: var(--hostel-radius-md);
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--hostel-shadow);
+}
+
+.hostel-stats__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--hostel-primary-soft);
+  color: var(--hostel-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hostel-stats__value {
+  font-family: "Sora", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.hostel-stats__label {
+  font-size: 12.5px;
+  color: var(--hostel-muted);
+  margin-top: 2px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Panel wrapper (filters + table live inside this)                       */
+/* ---------------------------------------------------------------------- */
+
+.hostel-page__panel {
+  background: var(--hostel-surface);
+  border: 1px solid var(--hostel-border);
+  border-radius: var(--hostel-radius-lg);
+  box-shadow: var(--hostel-shadow);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Filters                                                                 */
+/* ---------------------------------------------------------------------- */
+
+.hostel-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hostel-border-soft);
+  flex-wrap: wrap;
+}
+
+.hostel-filters__search {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--hostel-border);
+  border-radius: var(--hostel-radius-sm);
+  padding: 9px 12px;
+  color: var(--hostel-muted);
+}
+
+.hostel-filters__search input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  width: 100%;
+  color: var(--hostel-ink);
+  background: transparent;
+}
+
+.hostel-filters__select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--hostel-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hostel-filters__select select {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hostel-ink);
+  border: 1px solid var(--hostel-border);
+  border-radius: var(--hostel-radius-sm);
+  padding: 8px 10px;
+  background: #fff;
+  min-width: 150px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Table                                                                   */
+/* ---------------------------------------------------------------------- */
+
+.hostel-table__wrapper {
+  overflow-x: auto;
+}
+
+.hostel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.hostel-table thead th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--hostel-muted);
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--hostel-border-soft);
+  white-space: nowrap;
+}
+
+.hostel-row td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--hostel-border-soft);
+  vertical-align: middle;
+}
+
+.hostel-row:hover {
+  background: #fafbfd;
+}
+
+.hostel-row__primary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.hostel-row__type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+  background: var(--hostel-primary);
+}
+
+.hostel-row[data-type="Boys Hostel"] .hostel-row__type-dot { background: #2b6cb0; }
+.hostel-row[data-type="Girls Hostel"] .hostel-row__type-dot { background: #c2427d; }
+.hostel-row[data-type="PG"] .hostel-row__type-dot { background: #1e8a72; }
+.hostel-row[data-type="Apartment"] .hostel-row__type-dot { background: #b4791f; }
+
+.hostel-row__title-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--hostel-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.hostel-row__title-btn:hover {
+  color: var(--hostel-primary);
+  text-decoration: underline;
+}
+
+.hostel-row__subtitle {
+  font-size: 12.5px;
+  color: var(--hostel-muted);
+  margin-top: 2px;
+  max-width: 34ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hostel-row__num {
+  white-space: nowrap;
+}
+
+.hostel-row__fee {
+  font-weight: 700;
+}
+
+.hostel-row__fee-period {
+  font-weight: 500;
+  color: var(--hostel-muted);
+  font-size: 12px;
+}
+
+/* Badges */
+
+.hostel-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--hostel-primary-soft);
+  color: var(--hostel-primary-dark);
+  white-space: nowrap;
+}
+
+.hostel-badge[data-type="Boys Hostel"] { background: #eaf2fb; color: #2b6cb0; }
+.hostel-badge[data-type="Girls Hostel"] { background: #fceaf2; color: #c2427d; }
+.hostel-badge[data-type="PG"] { background: #e6f5f1; color: #1e8a72; }
+.hostel-badge[data-type="Apartment"] { background: #fbf1e0; color: #b4791f; }
+
+.hostel-badge--on-hero {
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+/* Row actions */
+
+.hostel-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.hostel-actions__btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--hostel-border);
+  background: #fff;
+  color: var(--hostel-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.hostel-actions__btn:hover {
+  background: var(--hostel-primary-soft);
+  border-color: var(--hostel-primary);
+  color: var(--hostel-primary);
+}
+
+.hostel-actions__btn--delete:hover {
+  background: var(--hostel-danger-soft);
+  border-color: var(--hostel-danger);
+  color: var(--hostel-danger);
+}
+
+/* Empty / loading states */
+
+.hostel-table__state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--hostel-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.hostel-table__state--empty svg {
+  color: var(--hostel-border);
+  margin-bottom: 6px;
+}
+
+.hostel-table__state span {
+  font-size: 13px;
+}
+
+.hostel-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 3px solid var(--hostel-border);
+  border-top-color: var(--hostel-primary);
+  animation: hostel-spin 0.7s linear infinite;
+}
+
+@keyframes hostel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Modal                                                                   */
+/* ---------------------------------------------------------------------- */
+
+.hostel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 32, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.hostel-modal {
+  background: #fff;
+  border-radius: var(--hostel-radius-lg);
+  max-width: 400px;
+  width: 100%;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 24px 48px -12px rgba(22, 32, 42, 0.35);
+}
+
+.hostel-modal__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--hostel-danger-soft);
+  color: var(--hostel-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.hostel-modal h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.hostel-modal p {
+  font-size: 14px;
+  color: var(--hostel-muted);
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.hostel-modal__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Form                                                                    */
+/* ---------------------------------------------------------------------- */
+
+.hostel-form {
+  padding: 24px;
+}
+
+.hostel-form__section {
+  border: none;
+  padding: 0 0 24px;
+  margin: 0 0 24px;
+  border-bottom: 1px solid var(--hostel-border-soft);
+}
+
+.hostel-form__section:last-of-type {
+  border-bottom: none;
+}
+
+.hostel-form__section legend {
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 0;
+  margin-bottom: 14px;
+  color: var(--hostel-ink);
+}
+
+.hostel-form__row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.hostel-form__row--four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.hostel-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--hostel-muted);
+}
+
+.hostel-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.hostel-form__field input,
+.hostel-form__field select,
+.hostel-form__field textarea {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hostel-ink);
+  border: 1px solid var(--hostel-border);
+  border-radius: var(--hostel-radius-sm);
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.hostel-form__field input:focus,
+.hostel-form__field select:focus,
+.hostel-form__field textarea:focus {
+  border-color: var(--hostel-primary);
+  box-shadow: 0 0 0 3px var(--hostel-primary-soft);
+}
+
+.hostel-form__field input.is-invalid,
+.hostel-form__field select.is-invalid,
+.hostel-form__field textarea.is-invalid {
+  border-color: var(--hostel-danger);
+}
+
+.hostel-form__field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.hostel-form__error {
+  color: var(--hostel-danger);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.hostel-form__inline-add {
+  display: flex;
+  gap: 8px;
+}
+
+.hostel-form__inline-add input {
+  flex: 1;
+}
+
+.hostel-form__amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.hostel-chip-toggle {
+  border: 1px solid var(--hostel-border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hostel-muted);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.hostel-chip-toggle:hover {
+  border-color: var(--hostel-primary);
+  color: var(--hostel-primary);
+}
+
+.hostel-chip-toggle.is-active {
+  background: var(--hostel-primary);
+  border-color: var(--hostel-primary);
+  color: #fff;
+}
+
+.hostel-form__selected-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.hostel-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--hostel-accent-soft);
+  color: #8a5c15;
+  border-radius: 999px;
+  padding: 6px 6px 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.hostel-chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 15px;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hostel-chip button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.hostel-chip--static {
+  padding: 6px 12px;
+}
+
+.hostel-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Profile page                                                           */
+/* ---------------------------------------------------------------------- */
+
+.hostel-profile {
+  background: var(--hostel-surface);
+  border: 1px solid var(--hostel-border);
+  border-radius: var(--hostel-radius-lg);
+  box-shadow: var(--hostel-shadow);
+  overflow: hidden;
+}
+
+.hostel-profile__hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 28px;
+  background: linear-gradient(135deg, var(--hostel-primary-soft), #fff 70%);
+  border-bottom: 1px solid var(--hostel-border-soft);
+}
+
+.hostel-profile__hero h1 {
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.hostel-profile__location {
+  color: var(--hostel-muted);
+  font-size: 14px;
+  margin: 0;
+  max-width: 60ch;
+}
+
+.hostel-profile__hero-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hostel-profile__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--hostel-border-soft);
+}
+
+.hostel-profile__stat {
+  background: #fff;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hostel-profile__stat span {
+  font-size: 12px;
+  color: var(--hostel-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.hostel-profile__stat strong {
+  font-family: "Sora", sans-serif;
+  font-size: 18px;
+}
+
+.hostel-profile__section {
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--hostel-border-soft);
+}
+
+.hostel-profile__section:last-of-type {
+  border-bottom: none;
+}
+
+.hostel-profile__section h2 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.hostel-profile__section p {
+  color: var(--hostel-ink);
+  line-height: 1.6;
+  font-size: 14.5px;
+  margin: 0;
+}
+
+.hostel-profile__muted {
+  color: var(--hostel-muted);
+  font-size: 14px;
+}
+
+.hostel-profile__footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 28px;
+  font-size: 12.5px;
+  color: var(--hostel-muted);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Responsive                                                              */
+/* ---------------------------------------------------------------------- */
+
+@media (max-width: 960px) {
+  .hostel-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hostel-profile__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hostel-form__row,
+  .hostel-form__row--four {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .hostel-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .hostel-profile__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hostel-form__row,
+  .hostel-form__row--four {
+    grid-template-columns: 1fr;
+  }
+
+  .hostel-profile__hero {
+    flex-direction: column;
+  }
+
+  .hostel-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

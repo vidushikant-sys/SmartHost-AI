@@ -10,6 +10,11 @@ import AddStudent from "../pages/students/AddStudent";
 import EditStudent from "../pages/students/EditStudent";
 import StudentProfile from "../pages/students/StudentProfile";
 
+import HostelList from "../pages/hostels/HostelList";
+import AddHostel from "../pages/hostels/AddHostel";
+import EditHostel from "../pages/hostels/EditHostel";
+import HostelProfile from "../pages/hostels/HostelProfile";
+
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -57,6 +62,39 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <EditStudent />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/hostels"
+            element={
+              <ProtectedRoute>
+                <HostelList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hostels/add"
+            element={
+              <ProtectedRoute>
+                <AddHostel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hostels/:id"
+            element={
+              <ProtectedRoute>
+                <HostelProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hostels/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditHostel />
               </ProtectedRoute>
             }
           />
