@@ -8,8 +8,8 @@ function AddStudent() {
   const navigate = useNavigate();
 
   async function handleSubmit(values) {
-    const created = await createStudent(values); // throws with .errors on validation failure
-    navigate(`/students/${created.id}`, { replace: true });
+    await createStudent(values); // throws with .errors on validation failure
+    navigate("/students", { replace: true });
   }
 
   return (

@@ -875,3 +875,33 @@
   object-position: center;
   border-radius: 50%;
 }
+
+/* ==========================================================
+   Clickable profile photo (opens full image in a new tab)
+========================================================== */
+.student-profile-avatar-link {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.student-profile-avatar-link:hover {
+  opacity: 0.85;
+}
+.required {
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+.field-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #ef4444;
+}
+
+.input-error {
+    border: 1px solid #ef4444 !important;
+}

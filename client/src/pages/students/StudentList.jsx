@@ -26,7 +26,7 @@ function StudentList() {
 
   function loadStudents() {
     setLoading(true);
-    getAllStudents()
+    return getAllStudents()
       .then((data) => setStudents(data || []))
       .catch((err) => setErrorMsg(err.message || "Failed to load students"))
       .finally(() => setLoading(false));
@@ -35,6 +35,14 @@ function StudentList() {
   useEffect(() => {
     loadStudents();
   }, []);
+
+  function handleDeleteClick(student) {
+    setDeleteTarget(student);
+  }
+
+  function handleCancelDelete() {
+    setDeleteTarget(null);
+  }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -53,11 +61,13 @@ function StudentList() {
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+
     setDeleting(true);
     try {
       await deleteStudent(deleteTarget.id);
       setDeleteTarget(null);
-      loadStudents();
+      await loadStudents();
     } catch (err) {
       setErrorMsg(err.message || "Failed to delete student");
       setDeleteTarget(null);
@@ -99,7 +109,7 @@ function StudentList() {
           <StudentTable
             students={paginated}
             loading={loading}
-            onDelete={setDeleteTarget}
+            onDelete={(student) => handleDeleteClick(student)}
           />
 
           {!loading && filtered.length > 0 && (
@@ -124,7 +134,7 @@ function StudentList() {
       <DeleteStudentModal
         student={deleteTarget}
         onConfirm={handleConfirmDelete}
-        onCancel={() => setDeleteTarget(null)}
+        onCancel={handleCancelDelete}
         deleting={deleting}
       />
     </DashboardLayout>

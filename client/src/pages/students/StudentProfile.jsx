@@ -161,11 +161,19 @@ function StudentProfile() {
         {/* ---------- Profile header card ---------- */}
         <div className="student-profile-header">
           {student.profile_photo ? (
-            <img
-              src={resolveFileUrl(student.profile_photo)}
-              alt={student.full_name}
-              className="student-profile-avatar student-profile-avatar-img"
-            />
+            <a
+              href={resolveFileUrl(student.profile_photo)}
+              target="_blank"
+              rel="noreferrer"
+              title="View full photo"
+              className="student-profile-avatar-link"
+            >
+              <img
+                src={resolveFileUrl(student.profile_photo)}
+                alt={student.full_name}
+                className="student-profile-avatar student-profile-avatar-img"
+              />
+            </a>
           ) : (
             <div className="student-profile-avatar">{initials(student.full_name)}</div>
           )}
