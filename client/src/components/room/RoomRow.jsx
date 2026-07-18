@@ -8,31 +8,25 @@ import RoomActions from "./RoomActions";
 // ==========================================================
 
 const STATUS_BADGE = {
-  Available: "badge-available",
-  Occupied: "badge-occupied",
-  Maintenance: "badge-maintenance",
+  Available: "badge-active",
+  Occupied: "badge-left",
+  Maintenance: "badge-inactive",
 };
 
-function RoomRow({ room, hostelName, onDelete }) {
+function RoomRow({ room, onDelete }) {
   const navigate = useNavigate();
 
-  const occupiedBeds = Math.max(0, (room.total_beds || 0) - (room.available_beds || 0));
-  const occupancyPct = room.total_beds ? Math.round((occupiedBeds / room.total_beds) * 100) : 0;
+  const occupied = Math.max(0, (room.total_beds || 0) - (room.available_beds || 0));
 
   return (
     <tr className="room-row" onClick={() => navigate(`/rooms/${room.id}`)}>
       <td>
-        <div className="room-cell-main">
-          <div className="room-avatar">{room.room_number}</div>
-          <div>
-            <div className="room-cell-title">Room {room.room_number}</div>
-            <div className="room-cell-sub">Floor {room.floor}</div>
-          </div>
-        </div>
+        <div className="room-cell-title">{room.room_number}</div>
+        <div className="room-cell-sub">Floor {room.floor}</div>
       </td>
 
       <td>
-        <div className="room-cell-title">{hostelName || "Unknown Hostel"}</div>
+        <div className="room-cell-title">{room.hostel_name || `Hostel #${room.hostel_id}`}</div>
       </td>
 
       <td>
@@ -42,16 +36,15 @@ function RoomRow({ room, hostelName, onDelete }) {
 
       <td>
         <div className="room-cell-title">
-          {occupiedBeds} / {room.total_beds} occupied
+          {occupied}/{room.total_beds} occupied
         </div>
-        <div className="room-cell-sub">{room.available_beds} available</div>
-        <div className="room-beds-bar-wrap">
-          <div className="room-beds-bar-fill" style={{ width: `${occupancyPct}%` }} />
-        </div>
+        <div className="room-cell-sub">{room.available_beds} beds free</div>
       </td>
 
       <td>
-        <div className="room-cell-title">₹{Number(room.monthly_fee).toLocaleString("en-IN")}</div>
+        <div className="room-cell-title">
+          ₹{Number(room.monthly_fee || 0).toLocaleString("en-IN")}
+        </div>
         <div className="room-cell-sub">per month</div>
       </td>
 

@@ -6,6 +6,7 @@ import StudentFilters from "../../components/student/StudentFilters";
 import StudentTable from "../../components/student/StudentTable";
 import DeleteStudentModal from "../../components/student/DeleteStudentModal";
 import { getAllStudents, deleteStudent } from "../../services/studentService";
+import { useHostel } from "../../context/HostelContext";
 import "../../styles/student.css";
 
 const PAGE_SIZE = 8;
@@ -23,18 +24,22 @@ function StudentList() {
   const [deleting, setDeleting] = useState(false);
 
   const navigate = useNavigate();
+  const { selectedHostelId, selectedHostel } = useHostel();
 
   function loadStudents() {
     setLoading(true);
-    return getAllStudents()
+    return getAllStudents(selectedHostelId)
       .then((data) => setStudents(data || []))
       .catch((err) => setErrorMsg(err.message || "Failed to load students"))
       .finally(() => setLoading(false));
   }
 
+  // Re-fetch every time the globally-selected hostel changes.
   useEffect(() => {
     loadStudents();
-  }, []);
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedHostelId]);
 
   function handleDeleteClick(student) {
     setDeleteTarget(student);
@@ -83,7 +88,9 @@ function StudentList() {
           <div>
             <h1>Students</h1>
             <p className="student-page-subtitle">
-              Manage every student record across your hostels.
+              {selectedHostel
+                ? `Showing students in ${selectedHostel.title}.`
+                : "Manage every student record across your hostels."}
             </p>
           </div>
           <button className="student-btn-primary" onClick={() => navigate("/students/add")}>

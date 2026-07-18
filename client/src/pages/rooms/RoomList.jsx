@@ -5,20 +5,18 @@ import RoomStats from "../../components/room/RoomStats";
 import RoomFilters from "../../components/room/RoomFilters";
 import RoomTable from "../../components/room/RoomTable";
 import DeleteRoomModal from "../../components/room/DeleteRoomModal";
-import { getAllRooms, deleteRoom, getAllHostels } from "../../services/roomService";
+import { getAllRooms, deleteRoom } from "../../services/roomService";
+import { useHostel } from "../../context/HostelContext";
 import "../../styles/room.css";
 
 const PAGE_SIZE = 8;
 
 function RoomList() {
   const [rooms, setRooms] = useState([]);
-  const [hostelsById, setHostelsById] = useState({});
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
   const [search, setSearch] = useState("");
-  const [roomType, setRoomType] = useState("All");
-  const [sharingType, setSharingType] = useState("All");
   const [status, setStatus] = useState("All");
   const [page, setPage] = useState(1);
 
@@ -26,33 +24,41 @@ function RoomList() {
   const [deleting, setDeleting] = useState(false);
 
   const navigate = useNavigate();
+  const { hostels, selectedHostelId, selectedHostel } = useHostel();
+
+  const hostelMap = useMemo(() => {
+    const map = {};
+    hostels.forEach((h) => {
+      map[h.id] = h.title;
+    });
+    return map;
+  }, [hostels]);
 
   function loadRooms() {
     setLoading(true);
-    return getAllRooms()
+    return getAllRooms(selectedHostelId)
       .then((data) => setRooms(data || []))
       .catch((err) => setErrorMsg(err.message || "Failed to load rooms"))
       .finally(() => setLoading(false));
   }
 
-  function loadHostels() {
-    return getAllHostels()
-      .then((data) => {
-        const map = {};
-        (data || []).forEach((h) => {
-          map[h.id] = h.title;
-        });
-        setHostelsById(map);
-      })
-      .catch(() => {
-        // Non-fatal — rooms still render, just without a hostel name.
-      });
-  }
-
+  // Re-fetch every time the globally-selected hostel changes.
   useEffect(() => {
     loadRooms();
-    loadHostels();
-  }, []);
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedHostelId]);
+
+  // Attach a friendly hostel_name to each room for display, since the
+  // backend only returns hostel_id on the room record itself.
+  const roomsWithHostelName = useMemo(
+    () =>
+      rooms.map((r) => ({
+        ...r,
+        hostel_name: hostelMap[r.hostel_id],
+      })),
+    [rooms, hostelMap]
+  );
 
   function handleDeleteClick(room) {
     setDeleteTarget(room);
@@ -64,18 +70,17 @@ function RoomList() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return rooms.filter((r) => {
-      const hostelName = hostelsById[r.hostel_id] || "";
+    return roomsWithHostelName.filter((r) => {
       const matchesSearch =
         !q ||
         r.room_number?.toLowerCase().includes(q) ||
-        hostelName.toLowerCase().includes(q);
-      const matchesRoomType = roomType === "All" || r.room_type === roomType;
-      const matchesSharingType = sharingType === "All" || r.sharing_type === sharingType;
+        r.room_type?.toLowerCase().includes(q) ||
+        r.sharing_type?.toLowerCase().includes(q) ||
+        r.hostel_name?.toLowerCase().includes(q);
       const matchesStatus = status === "All" || r.status === status;
-      return matchesSearch && matchesRoomType && matchesSharingType && matchesStatus;
+      return matchesSearch && matchesStatus;
     });
-  }, [rooms, hostelsById, search, roomType, sharingType, status]);
+  }, [roomsWithHostelName, search, status]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -103,7 +108,9 @@ function RoomList() {
           <div>
             <h1>Rooms</h1>
             <p className="room-page-subtitle">
-              Manage every room across your hostels.
+              {selectedHostel
+                ? `Showing rooms in ${selectedHostel.title}.`
+                : "Manage every room across your hostels."}
             </p>
           </div>
           <button className="room-btn-primary" onClick={() => navigate("/rooms/add")}>
@@ -116,23 +123,18 @@ function RoomList() {
 
         {errorMsg && <div className="room-page-error">{errorMsg}</div>}
 
-        <RoomStats rooms={rooms} loading={loading} />
+        <RoomStats rooms={roomsWithHostelName} loading={loading} />
 
         <div className="room-panel">
           <RoomFilters
             search={search}
             onSearchChange={(v) => { setSearch(v); setPage(1); }}
-            roomType={roomType}
-            onRoomTypeChange={(v) => { setRoomType(v); setPage(1); }}
-            sharingType={sharingType}
-            onSharingTypeChange={(v) => { setSharingType(v); setPage(1); }}
             status={status}
             onStatusChange={(v) => { setStatus(v); setPage(1); }}
           />
 
           <RoomTable
             rooms={paginated}
-            hostelsById={hostelsById}
             loading={loading}
             onDelete={(room) => handleDeleteClick(room)}
           />

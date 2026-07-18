@@ -8,6 +8,7 @@ import QuickActions from "../../components/dashboard/QuickActions";
 import NoticeBoard from "../../components/dashboard/NoticeBoard";
 import UpcomingFees from "../../components/dashboard/UpcomingFees";
 import { getDashboardOverview } from "../../services/dashboardService";
+import { useHostel } from "../../context/HostelContext";
 import "../../styles/dashboard.css";
 
 const ICONS = {
@@ -37,16 +38,21 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const { selectedHostelId, selectedHostel } = useHostel();
+
   useEffect(() => {
     let mounted = true;
+    setLoading(true);
 
-    getDashboardOverview()
+    getDashboardOverview(selectedHostelId)
       .then((data) => {
         if (!mounted) return;
         setOverview(data);
-        if (!data.stats) {
-          setErrorMsg("Some dashboard data couldn't be loaded. Showing what's available.");
-        }
+        setErrorMsg(
+          !data.stats
+            ? "Some dashboard data couldn't be loaded. Showing what's available."
+            : null
+        );
       })
       .catch((err) => {
         if (!mounted) return;
@@ -57,7 +63,8 @@ function Dashboard() {
     return () => {
       mounted = false;
     };
-  }, []);
+    // Re-fetch every widget whenever the globally-selected hostel changes.
+  }, [selectedHostelId]);
 
   const stats = overview?.stats;
   const today = new Date().toLocaleDateString("en-IN", {
@@ -72,7 +79,11 @@ function Dashboard() {
         <div className="dashboard-header">
           <div>
             <h1>Welcome back 👋</h1>
-            <p className="subtitle">Here's what's happening across your hostels today.</p>
+            <p className="subtitle">
+              {selectedHostel
+                ? `Here's what's happening at ${selectedHostel.title} today.`
+                : "Here's what's happening across your hostels today."}
+            </p>
           </div>
           <div className="header-date">
             <svg viewBox="0 0 24 24" fill="none" width="16" height="16">

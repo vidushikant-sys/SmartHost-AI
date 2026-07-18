@@ -3,55 +3,61 @@ import RoomActions from "./RoomActions";
 
 // ==========================================================
 // RoomCard
-// Mobile-friendly card view of a room (shown instead of the
-// table on small screens — see room.css media queries).
+// Mobile card view of a single room — same data as RoomRow
+// but laid out for narrow screens. Not wired into RoomTable
+// by default (RoomTable already collapses into a card-like
+// layout via CSS on small screens), but available for pages
+// that want an explicit card grid (e.g. a dashboard widget).
 // ==========================================================
 
 const STATUS_BADGE = {
-  Available: "badge-available",
-  Occupied: "badge-occupied",
-  Maintenance: "badge-maintenance",
+  Available: "badge-active",
+  Occupied: "badge-left",
+  Maintenance: "badge-inactive",
 };
 
-function RoomCard({ room, hostelName, onDelete }) {
+function RoomCard({ room, onDelete }) {
   const navigate = useNavigate();
-
-  const occupiedBeds = Math.max(0, (room.total_beds || 0) - (room.available_beds || 0));
+  const occupied = Math.max(0, (room.total_beds || 0) - (room.available_beds || 0));
 
   return (
     <div className="room-card" onClick={() => navigate(`/rooms/${room.id}`)}>
-      <div className="room-card-top">
-        <div className="room-cell-main">
-          <div className="room-avatar">{room.room_number}</div>
-          <div>
-            <div className="room-cell-title">Room {room.room_number}</div>
-            <div className="room-cell-sub">{hostelName || "Unknown Hostel"}</div>
+      <div className="room-card-header">
+        <div>
+          <div className="room-cell-title">{room.room_number}</div>
+          <div className="room-cell-sub">
+            {room.hostel_name || `Hostel #${room.hostel_id}`} · Floor {room.floor}
           </div>
         </div>
-        <span className={`room-badge ${STATUS_BADGE[room.status] || ""}`}>{room.status}</span>
+        <span className={`room-badge ${STATUS_BADGE[room.status] || ""}`}>
+          {room.status}
+        </span>
       </div>
 
       <div className="room-card-body">
-        <div>
-          <strong>{room.room_type}</strong>
-          Room Type
+        <div className="room-card-stat">
+          <span className="room-card-stat-label">Type</span>
+          <span className="room-card-stat-value">{room.room_type}</span>
         </div>
-        <div>
-          <strong>{room.sharing_type}</strong>
-          Sharing
+        <div className="room-card-stat">
+          <span className="room-card-stat-label">Sharing</span>
+          <span className="room-card-stat-value">{room.sharing_type}</span>
         </div>
-        <div>
-          <strong>{occupiedBeds} / {room.total_beds}</strong>
-          Beds Occupied
+        <div className="room-card-stat">
+          <span className="room-card-stat-label">Beds</span>
+          <span className="room-card-stat-value">
+            {occupied}/{room.total_beds}
+          </span>
         </div>
-        <div>
-          <strong>₹{Number(room.monthly_fee).toLocaleString("en-IN")}</strong>
-          Monthly Fee
+        <div className="room-card-stat">
+          <span className="room-card-stat-label">Fee</span>
+          <span className="room-card-stat-value">
+            ₹{Number(room.monthly_fee || 0).toLocaleString("en-IN")}
+          </span>
         </div>
       </div>
 
       <div className="room-card-footer">
-        <span className="room-cell-sub">Floor {room.floor}</span>
         <RoomActions room={room} onDelete={onDelete} />
       </div>
     </div>

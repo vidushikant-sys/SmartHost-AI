@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 
 // ==========================================================
 // RoomActions
-// View / Edit / Delete icon buttons for a single room row.
+// View / Edit / Delete icon buttons for a single room
+// (used inside both RoomRow and RoomCard).
 // ==========================================================
 
 function RoomActions({ room, onDelete }) {

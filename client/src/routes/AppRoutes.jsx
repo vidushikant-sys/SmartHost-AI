@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext";
+import { HostelProvider } from "../context/HostelContext";
 import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "../auth/Login";
@@ -32,124 +33,126 @@ import RoomDetails from "../pages/rooms/RoomDetails";
 function AppRoutes() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={<Login />} />
+      <HostelProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route path="/" element={<Login />} />
 
-          {/* Dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Dashboard */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= Student Routes ================= */}
-          <Route
-            path="/students"
-            element={
-              <ProtectedRoute>
-                <StudentList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/students/add"
-            element={
-              <ProtectedRoute>
-                <AddStudent />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/students/:id"
-            element={
-              <ProtectedRoute>
-                <StudentProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/students/:id/edit"
-            element={
-              <ProtectedRoute>
-                <EditStudent />
-              </ProtectedRoute>
-            }
-          />
+            {/* ================= Student Routes ================= */}
+            <Route
+              path="/students"
+              element={
+                <ProtectedRoute>
+                  <StudentList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/students/add"
+              element={
+                <ProtectedRoute>
+                  <AddStudent />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/students/:id"
+              element={
+                <ProtectedRoute>
+                  <StudentProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/students/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditStudent />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= Hostel Routes ================= */}
-          <Route
-            path="/hostels"
-            element={
-              <ProtectedRoute>
-                <HostelList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/hostels/add"
-            element={
-              <ProtectedRoute>
-                <AddHostel />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/hostels/:id"
-            element={
-              <ProtectedRoute>
-                <HostelProfile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/hostels/:id/edit"
-            element={
-              <ProtectedRoute>
-                <EditHostel />
-              </ProtectedRoute>
-            }
-          />
+            {/* ================= Hostel Routes ================= */}
+            <Route
+              path="/hostels"
+              element={
+                <ProtectedRoute>
+                  <HostelList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hostels/add"
+              element={
+                <ProtectedRoute>
+                  <AddHostel />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hostels/:id"
+              element={
+                <ProtectedRoute>
+                  <HostelProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hostels/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditHostel />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= Room Routes ================= */}
-          <Route
-            path="/rooms"
-            element={
-              <ProtectedRoute>
-                <RoomList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/rooms/add"
-            element={
-              <ProtectedRoute>
-                <AddRoom />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/rooms/:id"
-            element={
-              <ProtectedRoute>
-                <RoomDetails />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/rooms/:id/edit"
-            element={
-              <ProtectedRoute>
-                <EditRoom />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+            {/* ================= Room Routes ================= */}
+            <Route
+              path="/rooms"
+              element={
+                <ProtectedRoute>
+                  <RoomList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms/add"
+              element={
+                <ProtectedRoute>
+                  <AddRoom />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms/:id"
+              element={
+                <ProtectedRoute>
+                  <RoomDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/rooms/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditRoom />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </HostelProvider>
     </AuthProvider>
   );
 }

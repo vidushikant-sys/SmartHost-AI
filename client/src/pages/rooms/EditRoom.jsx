@@ -41,7 +41,7 @@ function EditRoom() {
           </button>
           <h1>Edit Room</h1>
           <p className="room-page-subtitle">
-            Update Room {room?.room_number || ""}'s details.
+            Update room {room?.room_number || ""}'s details.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ function EditRoom() {
         ) : loadError ? (
           <div className="room-page-error">{loadError}</div>
         ) : (
-          <RoomForm initialValues={room} onSubmit={handleSubmit} submitLabel="Update Room" />
+          <RoomForm initialValues={room} isEdit onSubmit={handleSubmit} submitLabel="Update Room" />
         )}
       </div>
     </DashboardLayout>

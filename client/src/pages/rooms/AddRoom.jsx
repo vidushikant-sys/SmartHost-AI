@@ -28,7 +28,7 @@ function AddRoom() {
           </p>
         </div>
 
-        <RoomForm onSubmit={handleSubmit} submitLabel="Add Room" />
+        <RoomForm onSubmit={handleSubmit} submitLabel="Add Room" isEdit={false} />
       </div>
     </DashboardLayout>
   );

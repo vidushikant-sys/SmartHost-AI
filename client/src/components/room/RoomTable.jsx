@@ -1,19 +1,12 @@
 import RoomRow from "./RoomRow";
-import RoomCard from "./RoomCard";
 
 // ==========================================================
 // RoomTable
-// Renders the table header + one RoomRow per room on larger
-// screens, and a RoomCard grid on small screens. Handles its
-// own loading skeleton / empty state.
-//
-// Props:
-//  - rooms: array
-//  - hostelsById: { [hostel_id]: hostel_name }
-//  - loading, onDelete
+// Renders the table header + one RoomRow per room. Handles
+// its own loading skeleton / empty state.
 // ==========================================================
 
-function RoomTable({ rooms, hostelsById = {}, loading, onDelete }) {
+function RoomTable({ rooms, loading, onDelete }) {
   if (loading) {
     return (
       <div className="room-table-wrap">
@@ -39,34 +32,24 @@ function RoomTable({ rooms, hostelsById = {}, loading, onDelete }) {
 
   return (
     <div className="room-table-wrap">
-      {/* ---------- Desktop table ---------- */}
-      <div className="room-table-wrap-desktop">
-        <table className="room-table">
-          <thead>
-            <tr>
-              <th>Room</th>
-              <th>Hostel</th>
-              <th>Type / Sharing</th>
-              <th>Beds</th>
-              <th>Monthly Fee</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {rooms.map((r) => (
-              <RoomRow key={r.id} room={r} hostelName={hostelsById[r.hostel_id]} onDelete={onDelete} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ---------- Mobile card grid ---------- */}
-      <div className="room-cards-grid">
-        {rooms.map((r) => (
-          <RoomCard key={r.id} room={r} hostelName={hostelsById[r.hostel_id]} onDelete={onDelete} />
-        ))}
-      </div>
+      <table className="room-table">
+        <thead>
+          <tr>
+            <th>Room</th>
+            <th>Hostel</th>
+            <th>Type / Sharing</th>
+            <th>Beds</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rooms.map((room) => (
+            <RoomRow key={room.id} room={room} onDelete={onDelete} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

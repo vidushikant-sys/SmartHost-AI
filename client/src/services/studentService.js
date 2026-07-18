@@ -5,8 +5,10 @@ import { request, API_BASE } from "./apiClient";
 // Talks to GET/POST/PUT/DELETE /api/student/* on the backend.
 // ==========================================================
 
-export function getAllStudents() {
-  return request("/student/all");
+export function getAllStudents(hostelId) {
+  return request(
+    hostelId ? `/student/all?hostel_id=${hostelId}` : "/student/all"
+  );
 }
 
 export function getStudentById(id) {

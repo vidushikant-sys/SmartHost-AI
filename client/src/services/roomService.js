@@ -3,12 +3,13 @@ import { request } from "./apiClient";
 // ==========================================================
 // roomService
 // Talks to GET/POST/PUT/DELETE /api/room/* on the backend.
-// Mirrors studentService.js exactly (same apiClient, same
-// throw-with-.errors contract used by RoomForm).
+// Mirrors studentService.js so the rest of the app stays
+// consistent (same request() helper, same error shape with
+// `.errors` for field-level validation failures).
 // ==========================================================
 
-export function getAllRooms() {
-  return request("/room/all");
+export function getAllRooms(hostelId) {
+  return request(hostelId ? `/room/all?hostel_id=${hostelId}` : "/room/all");
 }
 
 export function getRoomById(id) {
@@ -33,17 +34,4 @@ export function deleteRoom(id) {
   return request(`/room/delete/${id}`, {
     method: "DELETE",
   });
-}
-
-// ==========================================================
-// getAllHostels
-// Rooms only store a `hostel_id` (FK) — the backend room
-// endpoints don't embed the hostel's name. To show "Hostel
-// Name" on the Room List / Details / Form (dropdown), we
-// fetch the real hostel list from the already-existing
-// Property module (/api/property/all) and map id -> title
-// on the client. This is real backend data, not a mock.
-// ==========================================================
-export function getAllHostels() {
-  return request("/property/all");
 }

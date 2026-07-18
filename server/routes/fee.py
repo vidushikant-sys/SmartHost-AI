@@ -59,7 +59,8 @@ def create_fee_route():
 def get_all_fees_route():
     """Get all fees."""
     try:
-        fees = get_all_fees()
+        hostel_id = request.args.get("hostel_id", type=int)
+        fees = get_all_fees(hostel_id)
         return jsonify({
             "success": True,
             "count": len(fees),
@@ -223,7 +224,8 @@ def get_monthly_fees_route(month, year):
 def get_pending_fees_route():
     """Get all pending fees (not fully paid)."""
     try:
-        fees = get_pending_fees()
+        hostel_id = request.args.get("hostel_id", type=int)
+        fees = get_pending_fees(hostel_id)
         return jsonify({
             "success": True,
             "count": len(fees),

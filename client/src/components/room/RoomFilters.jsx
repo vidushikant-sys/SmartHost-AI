@@ -1,19 +1,10 @@
 // ==========================================================
 // RoomFilters
-// Search + Room Type + Sharing Type + Status filter bar for
-// RoomList. Fully controlled — parent owns the state.
+// Search + status filter bar for RoomList.
+// Fully controlled — parent owns the state.
 // ==========================================================
 
-function RoomFilters({
-  search,
-  onSearchChange,
-  roomType,
-  onRoomTypeChange,
-  sharingType,
-  onSharingTypeChange,
-  status,
-  onStatusChange,
-}) {
+function RoomFilters({ search, onSearchChange, status, onStatusChange }) {
   return (
     <div className="room-filters">
       <div className="room-search">
@@ -23,39 +14,14 @@ function RoomFilters({
         </svg>
         <input
           type="text"
-          placeholder="Search by room number or hostel..."
+          placeholder="Search by room number, type or hostel..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
 
       <select
-        className="room-filter-select"
-        value={roomType}
-        onChange={(e) => onRoomTypeChange(e.target.value)}
-      >
-        <option value="All">All Room Types</option>
-        <option value="Standard">Standard</option>
-        <option value="Deluxe">Deluxe</option>
-        <option value="Premium">Premium</option>
-        <option value="AC">AC</option>
-        <option value="Non AC">Non AC</option>
-      </select>
-
-      <select
-        className="room-filter-select"
-        value={sharingType}
-        onChange={(e) => onSharingTypeChange(e.target.value)}
-      >
-        <option value="All">All Sharing Types</option>
-        <option value="Single">Single</option>
-        <option value="Double">Double</option>
-        <option value="Triple">Triple</option>
-        <option value="Four Sharing">Four Sharing</option>
-      </select>
-
-      <select
-        className="room-filter-select"
+        className="room-status-filter"
         value={status}
         onChange={(e) => onStatusChange(e.target.value)}
       >

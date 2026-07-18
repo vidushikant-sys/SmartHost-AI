@@ -69,7 +69,12 @@ def add_notice():
 )
 @jwt_required()
 def all_notices():
-    notices = get_all_notices()
+    hostel_id = request.args.get(
+        "hostel_id",
+        type=int
+    )
+
+    notices = get_all_notices(hostel_id)
 
     return success_response(
         "Notices fetched successfully",

@@ -114,9 +114,14 @@ def create_fee(data):
     return fee.to_dict()
 
 
-def get_all_fees():
-    """Get all fees ordered by year, month, and ID."""
-    fees = Fee.query.order_by(
+def get_all_fees(hostel_id=None):
+    """Get all fees ordered by year, month, and ID. Optionally filtered by hostel."""
+    query = Fee.query
+
+    if hostel_id:
+        query = query.filter(Fee.hostel_id == hostel_id)
+
+    fees = query.order_by(
         Fee.year.desc(),
         Fee.month.desc(),
         Fee.id.desc()
@@ -157,11 +162,16 @@ def get_student_month_fee(student_id, month, year):
     return fee.to_dict()
 
 
-def get_pending_fees():
-    """Get all pending fees (not fully paid)."""
-    fees = Fee.query.filter(
+def get_pending_fees(hostel_id=None):
+    """Get all pending fees (not fully paid). Optionally filtered by hostel."""
+    query = Fee.query.filter(
         Fee.payment_status != "Paid"
-    ).order_by(Fee.due_date.asc()).all()
+    )
+
+    if hostel_id:
+        query = query.filter(Fee.hostel_id == hostel_id)
+
+    fees = query.order_by(Fee.due_date.asc()).all()
     return [fee.to_dict() for fee in fees]
 
 

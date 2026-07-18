@@ -38,6 +38,12 @@ def create_notice(data):
             "expiry_date"
         ),
 
+        # hostel_id is optional — leave it unset (None) to create a
+        # global notice visible under every hostel.
+        hostel_id=data.get(
+            "hostel_id"
+        ) or None,
+
         status="Active"
 
     )
@@ -55,10 +61,22 @@ def create_notice(data):
 # Get All Notices
 # ==================================================
 
-def get_all_notices():
+def get_all_notices(hostel_id=None):
 
 
-    notices = Notice.query.order_by(
+    query = Notice.query
+
+    # When a hostel is selected, show that hostel's notices PLUS any
+    # global notice (hostel_id is NULL) so hostel-wide announcements
+    # still show up under every hostel.
+    if hostel_id:
+
+        query = query.filter(
+            (Notice.hostel_id == hostel_id) |
+            (Notice.hostel_id.is_(None))
+        )
+
+    notices = query.order_by(
         Notice.created_at.desc()
     ).all()
 

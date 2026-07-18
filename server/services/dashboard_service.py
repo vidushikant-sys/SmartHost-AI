@@ -6,6 +6,7 @@ from config.extensions import db
 from models.property import Property
 from models.room import Room
 from models.student import Student
+from models.room_allocation import RoomAllocation
 from models.fee import Fee
 from models.notice import Notice
 from models.complaint import Complaint
@@ -16,11 +17,13 @@ from models.activity_log import ActivityLog
 # Dashboard Service
 # ==================================================
 
-def get_dashboard_data():
+def get_dashboard_data(hostel_id=None):
 
     # ==========================================
     # Hostel Statistics
     # ==========================================
+    # total_hostels always reflects the admin's whole portfolio —
+    # even with a hostel selected, it's still useful context.
 
     total_hostels = Property.query.count()
 
@@ -28,13 +31,18 @@ def get_dashboard_data():
     # Room Statistics
     # ==========================================
 
-    total_rooms = Room.query.count()
+    room_query = Room.query
 
-    available_rooms = Room.query.filter(
+    if hostel_id:
+        room_query = room_query.filter(Room.hostel_id == hostel_id)
+
+    total_rooms = room_query.count()
+
+    available_rooms = room_query.filter(
         Room.available_beds > 0
     ).count()
 
-    occupied_rooms = Room.query.filter(
+    occupied_rooms = room_query.filter(
         Room.available_beds == 0
     ).count()
 
@@ -61,13 +69,23 @@ def get_dashboard_data():
     # Student Statistics
     # ==========================================
 
-    total_students = Student.query.count()
+    student_query = Student.query
 
-    active_students = Student.query.filter_by(
-        status="Active"
+    if hostel_id:
+        student_query = (
+            student_query
+            .join(RoomAllocation, RoomAllocation.student_id == Student.id)
+            .join(Room, RoomAllocation.room_id == Room.id)
+            .filter(Room.hostel_id == hostel_id)
+        )
+
+    total_students = student_query.count()
+
+    active_students = student_query.filter(
+        Student.status == "Active"
     ).count()
 
-    inactive_students = Student.query.filter(
+    inactive_students = student_query.filter(
         Student.status != "Active"
     ).count()
 
@@ -78,7 +96,7 @@ def get_dashboard_data():
 
     recent_students = (
 
-        Student.query
+        student_query
 
         .order_by(Student.created_at.desc())
 
@@ -110,9 +128,17 @@ def get_dashboard_data():
     # Latest Active Notices
     # ==========================================
 
+    notice_query = Notice.query
+
+    if hostel_id:
+        notice_query = notice_query.filter(
+            (Notice.hostel_id == hostel_id) |
+            (Notice.hostel_id.is_(None))
+        )
+
     latest_notices = (
 
-        Notice.query
+        notice_query
 
         .filter_by(status="Active")
 
@@ -127,39 +153,46 @@ def get_dashboard_data():
     # Fee Statistics
     # ==========================================
 
+    fee_query = Fee.query
+
+    if hostel_id:
+        fee_query = fee_query.filter(Fee.hostel_id == hostel_id)
+
+    fee_sum_filter = [Fee.hostel_id == hostel_id] if hostel_id else []
+
     total_fee_generated = db.session.query(
 
         func.sum(Fee.total_amount)
 
-    ).scalar() or 0
+    ).filter(*fee_sum_filter).scalar() or 0
 
     total_collection = db.session.query(
 
         func.sum(Fee.paid_amount)
 
-    ).scalar() or 0
+    ).filter(*fee_sum_filter).scalar() or 0
 
     pending_amount = db.session.query(
 
         func.sum(Fee.remaining_amount)
 
-    ).scalar() or 0
+    ).filter(*fee_sum_filter).scalar() or 0
 
-    pending_fees = Fee.query.filter_by(
+    pending_fees = fee_query.filter(
 
-        payment_status="Pending"
-
-    ).count()
-
-    partial_fees = Fee.query.filter_by(
-
-        payment_status="Partial"
+        Fee.payment_status == "Pending"
 
     ).count()
 
-    paid_fees = Fee.query.filter_by(
+    partial_fees = fee_query.filter(
 
-        payment_status="Paid"
+        Fee.payment_status == "Partial"
+
+    ).count()
+
+    paid_fees = fee_query.filter(
+
+        Fee.payment_status == "Paid"
 
     ).count()
 
@@ -184,7 +217,9 @@ def get_dashboard_data():
 
             Fee.year == current_year,
 
-            Fee.month == month
+            Fee.month == month,
+
+            *fee_sum_filter
 
         ).scalar() or 0
 
@@ -210,29 +245,50 @@ def get_dashboard_data():
     # Complaint Statistics
     # ==========================================
 
-    total_complaints = Complaint.query.count()
+    complaint_query = Complaint.query
 
-    pending_complaints = Complaint.query.filter_by(
-        status="Open"
+    if hostel_id:
+        complaint_query = (
+            complaint_query
+            .join(Student, Complaint.student_id == Student.id)
+            .join(RoomAllocation, RoomAllocation.student_id == Student.id)
+            .join(Room, RoomAllocation.room_id == Room.id)
+            .filter(Room.hostel_id == hostel_id)
+        )
+
+    total_complaints = complaint_query.count()
+
+    pending_complaints = complaint_query.filter(
+        Complaint.status == "Open"
     ).count()
 
-    resolved_complaints = Complaint.query.filter_by(
-        status="Resolved"
+    resolved_complaints = complaint_query.filter(
+        Complaint.status == "Resolved"
     ).count()
 
 
     # ==========================================
     # Notice Statistics
     # ==========================================
+    # A hostel's notice count includes its own notices plus any
+    # global (hostel_id=NULL) notices.
 
-    total_notices = Notice.query.count()
+    notice_stats_query = Notice.query
 
-    active_notices = Notice.query.filter_by(
-        status="Active"
+    if hostel_id:
+        notice_stats_query = notice_stats_query.filter(
+            (Notice.hostel_id == hostel_id) |
+            (Notice.hostel_id.is_(None))
+        )
+
+    total_notices = notice_stats_query.count()
+
+    active_notices = notice_stats_query.filter(
+        Notice.status == "Active"
     ).count()
 
-    expired_notices = Notice.query.filter_by(
-        status="Expired"
+    expired_notices = notice_stats_query.filter(
+        Notice.status == "Expired"
     ).count()
 
 
@@ -244,7 +300,9 @@ def get_dashboard_data():
 
         "hostel": {
 
-            "total_hostels": total_hostels
+            "total_hostels": total_hostels,
+
+            "selected_hostel_id": hostel_id
 
         },
 

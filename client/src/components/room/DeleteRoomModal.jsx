@@ -18,9 +18,10 @@ function DeleteRoomModal({ room, onConfirm, onCancel, deleting }) {
 
         <h3>Delete Room</h3>
         <p>
-          Are you sure you want to delete <strong>Room {room.room_number}</strong>?
-          This will permanently remove this room record. This action cannot be
-          undone.
+          Are you sure you want to delete room{" "}
+          <strong>{room.room_number}</strong>? This will permanently remove
+          this room, along with any linked allocation history. This action
+          cannot be undone.
         </p>
 
         <div className="room-modal-actions">

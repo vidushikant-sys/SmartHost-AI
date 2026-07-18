@@ -9,7 +9,8 @@ function RoomStats({ rooms = [], loading }) {
   const available = rooms.filter((r) => r.status === "Available").length;
   const occupied = rooms.filter((r) => r.status === "Occupied").length;
   const maintenance = rooms.filter((r) => r.status === "Maintenance").length;
-  const totalBedsAvailable = rooms.reduce((sum, r) => sum + (r.available_beds || 0), 0);
+  const totalBeds = rooms.reduce((sum, r) => sum + (r.total_beds || 0), 0);
+  const freeBeds = rooms.reduce((sum, r) => sum + (r.available_beds || 0), 0);
 
   const CARDS = [
     {
@@ -37,7 +38,7 @@ function RoomStats({ rooms = [], loading }) {
       ),
     },
     {
-      label: "Under Maintenance",
+      label: "Maintenance",
       value: maintenance,
       color: "amber",
       icon: (
@@ -45,8 +46,8 @@ function RoomStats({ rooms = [], loading }) {
       ),
     },
     {
-      label: "Beds Available",
-      value: totalBedsAvailable,
+      label: "Beds Free",
+      value: `${freeBeds}/${totalBeds}`,
       color: "red",
       icon: (
         <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 14h20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
