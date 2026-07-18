@@ -56,7 +56,9 @@ def add_student():
 @student_bp.route("/all", methods=["GET"])
 def all_students():
 
-    students = get_all_students()
+    hostel_id = request.args.get("hostel_id", type=int)
+
+    students = get_all_students(hostel_id)
 
     return success_response(
         "Students fetched successfully",

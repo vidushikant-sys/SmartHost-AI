@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from flask_jwt_extended import jwt_required
 
@@ -34,7 +34,9 @@ def dashboard():
 
     try:
 
-        data = get_dashboard_data()
+        hostel_id = request.args.get("hostel_id", type=int)
+
+        data = get_dashboard_data(hostel_id)
 
 
         return success_response(

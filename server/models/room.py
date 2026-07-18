@@ -144,6 +144,8 @@ class Room(db.Model):
 
             "hostel_id": self.hostel_id,
 
+            "hostel_name": self.hostel.title if self.hostel else None,
+
             "room_number": self.room_number,
 
             "floor": self.floor,
@@ -157,6 +159,8 @@ class Room(db.Model):
             "total_beds": self.total_beds,
 
             "available_beds": self.available_beds,
+
+            "occupied_beds": self.total_beds - self.available_beds,
 
             "status": self.status,
 

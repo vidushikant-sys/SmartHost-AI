@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import HostelSwitcher from "./HostelSwitcher";
 import "../../styles/topNavbar.css";
 
 function TopNavbar() {
@@ -45,6 +46,8 @@ function TopNavbar() {
       </div>
 
       <div className="top-navbar-right">
+        <HostelSwitcher />
+
         <button className="icon-btn" aria-label="Notifications">
           <svg viewBox="0 0 24 24" fill="none">
             <path

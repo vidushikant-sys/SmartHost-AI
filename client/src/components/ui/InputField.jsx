@@ -5,13 +5,21 @@ function InputField({
   name,
   value,
   onChange,
+  onBlur,
   placeholder = "",
   options = [],
   error = "",
+  helperText = "",
   required = false,
   disabled = false,
   readOnly = false,
 }) {
+  // IMPORTANT: use `?? ""` (nullish coalescing), not `|| ""`.
+  // `|| ""` treats the number 0 as falsy and blanks the field —
+  // which breaks things like "Available Beds: 0" or "Floor: 0"
+  // (ground floor). `??` only falls back on null/undefined.
+  const displayValue = value ?? "";
+
   return (
     <div className="input-group">
       {label && (
@@ -25,8 +33,9 @@ function InputField({
         <select
           id={name}
           name={name}
-          value={value || ""}
+          value={displayValue}
           onChange={onChange}
+          onBlur={onBlur}
           disabled={disabled}
           className={error ? "input-error" : ""}
         >
@@ -42,8 +51,9 @@ function InputField({
         <textarea
           id={name}
           name={name}
-          value={value || ""}
+          value={displayValue}
           onChange={onChange}
+          onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled}
           readOnly={readOnly}
@@ -55,8 +65,9 @@ function InputField({
           id={name}
           type={type}
           name={name}
-          value={value || ""}
+          value={displayValue}
           onChange={onChange}
+          onBlur={onBlur}
           placeholder={placeholder}
           disabled={disabled}
           readOnly={readOnly}
@@ -64,6 +75,9 @@ function InputField({
         />
       )}
 
+      {helperText && !error && (
+        <span className="field-helper">{helperText}</span>
+      )}
       {error && <span className="field-error">{error}</span>}
     </div>
   );

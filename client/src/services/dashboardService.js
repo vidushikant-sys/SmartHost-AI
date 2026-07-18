@@ -4,6 +4,11 @@ import { request } from "./apiClient";
 // Dashboard Service
 // Handles all API calls for the Admin Dashboard.
 // Talks directly to the Flask backend (JWT protected routes).
+//
+// Every function accepts an optional `hostelId`. When provided
+// (from HostelContext), it's sent as ?hostel_id= so the backend
+// scopes its numbers/lists to just that hostel. Pass null/undefined
+// for the "All Hostels" view.
 // ==========================================================
 
 const MONTH_LABELS = [
@@ -11,20 +16,24 @@ const MONTH_LABELS = [
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
+function withHostelParam(endpoint, hostelId) {
+  return hostelId ? `${endpoint}?hostel_id=${hostelId}` : endpoint;
+}
+
 // ----------------------------------------------------------
 // Core dashboard stats -> GET /api/dashboard/
 // { hostel, rooms, students, fees, complaints, notices }
 // ----------------------------------------------------------
-export function getDashboardStats() {
-  return request("/dashboard/");
+export function getDashboardStats(hostelId) {
+  return request(withHostelParam("/dashboard/", hostelId));
 }
 
 // ----------------------------------------------------------
 // Pending fees -> GET /api/fees/pending
 // Used to power the "Upcoming Fees" widget
 // ----------------------------------------------------------
-export async function getUpcomingFees(limit = 5) {
-  const fees = await request("/fees/pending");
+export async function getUpcomingFees(limit = 5, hostelId) {
+  const fees = await request(withHostelParam("/fees/pending", hostelId));
   return (fees || [])
     .slice()
     .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
@@ -35,8 +44,8 @@ export async function getUpcomingFees(limit = 5) {
 // Notices -> GET /api/notice/all
 // Used to power the "Notice Board" widget
 // ----------------------------------------------------------
-export async function getRecentNotices(limit = 5) {
-  const notices = await request("/notice/all");
+export async function getRecentNotices(limit = 5, hostelId) {
+  const notices = await request(withHostelParam("/notice/all", hostelId));
   return (notices || [])
     .filter((n) => n.status === "Active")
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -47,8 +56,8 @@ export async function getRecentNotices(limit = 5) {
 // Complaints -> GET /api/complaint/all
 // Used to power the "Recent Activity" widget
 // ----------------------------------------------------------
-export async function getRecentComplaints(limit = 6) {
-  const complaints = await request("/complaint/all");
+export async function getRecentComplaints(limit = 6, hostelId) {
+  const complaints = await request(withHostelParam("/complaint/all", hostelId));
   return (complaints || [])
     .slice()
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -58,6 +67,10 @@ export async function getRecentComplaints(limit = 6) {
 // ----------------------------------------------------------
 // Revenue trend -> GET /api/fees/monthly-collection/:month/:year
 // Fetches the last `count` months (oldest -> newest) in parallel
+//
+// Note: this endpoint doesn't yet support hostel-level filtering
+// on the backend, so the revenue chart currently always reflects
+// all hostels combined, even when a single hostel is selected.
 // ----------------------------------------------------------
 export async function getRevenueTrend(count = 6) {
   const now = new Date();
@@ -89,15 +102,19 @@ export async function getRevenueTrend(count = 6) {
 // Combined loader for the whole dashboard page.
 // Runs every widget's request in parallel; a single widget
 // failing (e.g. an unfinished endpoint) won't break the rest.
+//
+// Pass the currently-selected hostelId (from useHostel()) so
+// every widget scopes itself to that hostel — or omit/null it
+// for the "All Hostels" view.
 // ----------------------------------------------------------
-export async function getDashboardOverview() {
+export async function getDashboardOverview(hostelId) {
   const [stats, revenue, upcomingFees, notices, complaints] =
     await Promise.allSettled([
-      getDashboardStats(),
+      getDashboardStats(hostelId),
       getRevenueTrend(6),
-      getUpcomingFees(5),
-      getRecentNotices(5),
-      getRecentComplaints(6),
+      getUpcomingFees(5, hostelId),
+      getRecentNotices(5, hostelId),
+      getRecentComplaints(6, hostelId),
     ]);
 
   const value = (r, fallback) =>

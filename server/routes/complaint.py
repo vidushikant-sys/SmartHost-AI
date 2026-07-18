@@ -40,7 +40,8 @@ def add_complaint():
 @jwt_required()
 def all_complaints():
     try:
-        complaints = get_all_complaints()
+        hostel_id = request.args.get("hostel_id", type=int)
+        complaints = get_all_complaints(hostel_id)
         return success_response(
             "Complaints fetched successfully",
             complaints,

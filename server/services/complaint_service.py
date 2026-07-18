@@ -106,9 +106,33 @@ def create_complaint(data):
 # Get All Complaints
 # ==================================================
 
-def get_all_complaints():
+def get_all_complaints(hostel_id=None):
 
-    complaints = Complaint.query.order_by(
+    query = Complaint.query
+
+    # Complaint has no direct hostel_id — it's derived through the
+    # student's room allocation. Filter to complaints raised by
+    # students who have an allocation to a room in the selected hostel.
+    if hostel_id:
+
+        from models.room_allocation import RoomAllocation
+        from models.room import Room
+
+        query = (
+
+            query
+
+            .join(Student, Complaint.student_id == Student.id)
+
+            .join(RoomAllocation, RoomAllocation.student_id == Student.id)
+
+            .join(Room, RoomAllocation.room_id == Room.id)
+
+            .filter(Room.hostel_id == hostel_id)
+
+        )
+
+    complaints = query.order_by(
         Complaint.created_at.desc()
     ).all()
 

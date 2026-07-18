@@ -53,7 +53,9 @@ def add_room():
 @room_bp.route("/all", methods=["GET"])
 def all_rooms():
 
-    rooms = get_all_rooms()
+    hostel_id = request.args.get("hostel_id", type=int)
+
+    rooms = get_all_rooms(hostel_id)
 
     return success_response(
         "Rooms fetched successfully",

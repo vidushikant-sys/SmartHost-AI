@@ -34,9 +34,14 @@ def create_room(data):
 # ==========================================
 # Get All Rooms
 # ==========================================
-def get_all_rooms():
+def get_all_rooms(hostel_id=None):
 
-    rooms = Room.query.all()
+    query = Room.query
+
+    if hostel_id:
+        query = query.filter(Room.hostel_id == hostel_id)
+
+    rooms = query.all()
 
     return [room.to_dict() for room in rooms]
 # ==========================================
@@ -67,6 +72,10 @@ def update_room(room_id, data):
     if room is None:
         return None, "Room not found"
 
+    # NOTE: hostel_id is now updated too (it was previously skipped here,
+    # so a room's hostel could never actually be changed via this update
+    # function even if a valid hostel_id was sent).
+    room.hostel_id = data.get("hostel_id", room.hostel_id)
     room.room_number = data.get("room_number", room.room_number)
     room.floor = data.get("floor", room.floor)
     room.room_type = data.get("room_type", room.room_type)

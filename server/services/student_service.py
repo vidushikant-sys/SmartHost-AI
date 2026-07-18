@@ -148,6 +148,7 @@ def student_to_dict(student):
 
     complaints = get_complaint_summary(student.id)
 
+    hostel_id = None
     hostel_name = None
     room_number = None
     allocation_status = "Not Allocated"
@@ -159,6 +160,8 @@ def student_to_dict(student):
         if allocation.room:
 
             room_number = allocation.room.room_number
+
+            hostel_id = allocation.room.hostel_id
 
             if allocation.room.hostel:
 
@@ -235,6 +238,8 @@ def student_to_dict(student):
         # ======================================
         # Hostel Information
         # ======================================
+
+        "hostel_id": hostel_id,
 
         "hostel_name": hostel_name,
 
@@ -399,9 +404,9 @@ def create_student(data):
 # Get All Students (Optimized)
 # ==================================================
 
-def get_all_students():
+def get_all_students(hostel_id=None):
 
-    students = (
+    query = (
 
         Student.query
 
@@ -414,6 +419,29 @@ def get_all_students():
             .joinedload(Room.hostel)
 
         )
+
+    )
+
+    # A student has no direct hostel_id column — hostel is derived
+    # through their room allocation. Filter to students who have an
+    # (active) allocation to a room belonging to the selected hostel.
+    if hostel_id:
+
+        query = (
+
+            query
+
+            .join(Student.allocations)
+
+            .join(RoomAllocation.room)
+
+            .filter(Room.hostel_id == hostel_id)
+
+        )
+
+    students = (
+
+        query
 
         .order_by(Student.id.desc())
 

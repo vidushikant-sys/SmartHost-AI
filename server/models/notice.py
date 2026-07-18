@@ -86,6 +86,19 @@ class Notice(db.Model):
     )
 
 
+    # =========================================
+    # Hostel Scope
+    # =========================================
+    # NULL = global notice, visible under every hostel.
+    # Set = notice only applies to that specific hostel.
+
+    hostel_id = db.Column(
+        db.Integer,
+        db.ForeignKey("properties.id"),
+        nullable=True
+    )
+
+
 
     # =========================================
     # Expiry
@@ -129,6 +142,14 @@ class Notice(db.Model):
         )
     )
 
+    hostel = db.relationship(
+        "Property",
+        backref=db.backref(
+            "notices",
+            lazy=True
+        )
+    )
+
 
 
     # =========================================
@@ -158,6 +179,14 @@ class Notice(db.Model):
     if self.admin
     else None
 ),
+
+            "hostel_id": self.hostel_id,
+
+            "hostel_name": (
+                self.hostel.title
+                if self.hostel
+                else None
+            ),
 
             "expiry_date": (
                 str(self.expiry_date)
