@@ -1,20 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HostelSwitcher from "./HostelSwitcher";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/topNavbar.css";
 
 function TopNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+  const { admin: authAdmin, logout } = useAuth();
 
-  const admin = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("admin")) || {};
-    } catch {
-      return {};
-    }
-  })();
+  const admin = authAdmin || {};
 
   const displayName = admin.full_name || "Admin";
   const initial = displayName.charAt(0).toUpperCase();
@@ -30,8 +26,7 @@ function TopNavbar() {
   }, []);
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("admin");
+    logout();
     navigate("/");
   }
 

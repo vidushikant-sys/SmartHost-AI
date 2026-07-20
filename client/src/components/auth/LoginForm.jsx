@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/Logo.png";
 import InputField from "./InputField";
 import SocialButton from "./SocialButton";
-import { login } from "../../services/authService";
-import { saveToken } from "../../utils/token";
+import { useAuth } from "../../context/AuthContext";
 
 // Official brand marks — kept as inline SVGs so the real Google / Microsoft
 // colors render instead of generic monochrome icons.
@@ -70,6 +69,7 @@ function ShieldIcon() {
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -88,16 +88,7 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await login({
-        email: form.email.trim(),
-        password: form.password,
-      });
-      const token = res?.token || res?.access_token;
-      if (!token) {
-        throw new Error("Login response did not include a token.");
-      }
-      saveToken(token);
-      localStorage.setItem("admin", JSON.stringify(res.admin || {}));
+      await login(form.email.trim(), form.password);
       navigate("/dashboard");
     } catch (error) {
       const message = error?.message || "Login Failed";

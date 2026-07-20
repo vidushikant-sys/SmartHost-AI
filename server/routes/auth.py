@@ -1,3 +1,6 @@
+import os
+import re
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
     create_access_token,
@@ -10,6 +13,8 @@ from models.admin import Admin
 
 auth = Blueprint("auth", __name__)
 
+EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
 
 # ==========================
 # Register API
@@ -17,11 +22,48 @@ auth = Blueprint("auth", __name__)
 @auth.route("/register", methods=["POST"])
 def register():
 
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    full_name = data.get("full_name")
-    email = data.get("email")
-    password = data.get("password")
+    full_name = (data.get("full_name") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+    invite_code = data.get("invite_code") or ""
+
+    # -------- Invite Code Check --------
+    # Only someone who has this secret code can create an admin account.
+    # Set ADMIN_INVITE_CODE in your .env file.
+    required_invite_code = os.getenv("ADMIN_INVITE_CODE")
+
+    if not required_invite_code:
+        return jsonify({
+            "success": False,
+            "message": "Registration is disabled. ADMIN_INVITE_CODE is not configured on the server."
+        }), 403
+
+    if invite_code != required_invite_code:
+        return jsonify({
+            "success": False,
+            "message": "Invalid invite code"
+        }), 403
+
+    # -------- Field Validation --------
+    if not full_name:
+        return jsonify({
+            "success": False,
+            "message": "Full name is required"
+        }), 400
+
+    if not email or not EMAIL_REGEX.match(email):
+        return jsonify({
+            "success": False,
+            "message": "A valid email is required"
+        }), 400
+
+    if not password or len(password) < 6:
+        return jsonify({
+            "success": False,
+            "message": "Password must be at least 6 characters long"
+        }), 400
 
     # Check if email already exists
     existing_admin = Admin.query.filter_by(email=email).first()
@@ -57,10 +99,16 @@ def register():
 @auth.route("/login", methods=["POST"])
 def login():
 
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    email = data.get("email")
-    password = data.get("password")
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+
+    if not email or not password:
+        return jsonify({
+            "success": False,
+            "message": "Email and password are required"
+        }), 400
 
     # Check Email
     admin = Admin.query.filter_by(email=email).first()
