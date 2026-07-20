@@ -645,21 +645,31 @@ def get_monthly_collection(month, year):
     }
 
 
-def get_fee_dashboard():
-    """Get fee management dashboard statistics."""
-    return {
-        "total_fees": Fee.query.count(),
-        "paid_fees": Fee.query.filter_by(payment_status="Paid").count(),
-        "pending_fees": Fee.query.filter_by(payment_status="Pending").count(),
-        "partial_fees": Fee.query.filter_by(payment_status="Partial").count(),
-        "total_collection": float(
-            db.session.query(
-                func.coalesce(func.sum(FeePayment.payment_amount), 0)
-            ).scalar()
-        ),
-        "total_due": float(
-            db.session.query(
-                func.coalesce(func.sum(Fee.remaining_amount), 0)
-            ).scalar()
+def get_fee_dashboard(hostel_id=None):
+    """Get fee management dashboard statistics. Optionally filtered by hostel."""
+    fee_query = Fee.query
+    if hostel_id:
+        fee_query = fee_query.filter(Fee.hostel_id == hostel_id)
+
+    payment_query = db.session.query(
+        func.coalesce(func.sum(FeePayment.payment_amount), 0)
+    )
+    if hostel_id:
+        payment_query = payment_query.join(Fee, FeePayment.fee_id == Fee.id).filter(
+            Fee.hostel_id == hostel_id
         )
+
+    due_query = db.session.query(
+        func.coalesce(func.sum(Fee.remaining_amount), 0)
+    )
+    if hostel_id:
+        due_query = due_query.filter(Fee.hostel_id == hostel_id)
+
+    return {
+        "total_fees": fee_query.count(),
+        "paid_fees": fee_query.filter(Fee.payment_status == "Paid").count(),
+        "pending_fees": fee_query.filter(Fee.payment_status == "Pending").count(),
+        "partial_fees": fee_query.filter(Fee.payment_status == "Partial").count(),
+        "total_collection": float(payment_query.scalar()),
+        "total_due": float(due_query.scalar())
     }

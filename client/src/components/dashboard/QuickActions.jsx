@@ -24,7 +24,7 @@ const ACTIONS = [
   },
   {
     label: "Collect Fee",
-    path: "/fees/new",
+    path: "/fees/generate",
     color: { bg: "rgba(245, 158, 11, 0.12)", fg: "#B45309" },
     icon: (
       <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />

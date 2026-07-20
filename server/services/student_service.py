@@ -10,6 +10,7 @@ from models.room_allocation import RoomAllocation
 from models.room import Room
 from models.property import Property
 from models.fee import Fee
+from models.fee_payment import FeePayment
 from models.complaint import Complaint
 
 from validators.student_validator import StudentValidator
@@ -341,15 +342,20 @@ def create_student(data):
             return None, "Aadhaar number already exists"
 
     # Date Conversion
-    dob = datetime.strptime(
-        data.get("date_of_birth"),
-        "%Y-%m-%d"
-    ).date()
+    try:
+        dob = datetime.strptime(
+            data.get("date_of_birth"),
+            "%Y-%m-%d"
+        ).date()
 
-    admission_date = datetime.strptime(
-        data.get("admission_date"),
-        "%Y-%m-%d"
-    ).date()
+        admission_date = datetime.strptime(
+            data.get("admission_date"),
+            "%Y-%m-%d"
+        ).date()
+    except (ValueError, TypeError):
+        return None, {
+            "date_of_birth": "Date of birth and admission date must be valid dates (YYYY-MM-DD)."
+        }
 
     student = Student(
 
@@ -424,19 +430,18 @@ def get_all_students(hostel_id=None):
 
     # A student has no direct hostel_id column — hostel is derived
     # through their room allocation. Filter to students who have an
-    # (active) allocation to a room belonging to the selected hostel.
+    # allocation to a room belonging to the selected hostel, using an
+    # EXISTS-style relationship filter (.any()/.has()) rather than an
+    # explicit .join() — combining .join() with .options(joinedload())
+    # on the same relationship path is a known SQLAlchemy pitfall that
+    # can silently produce duplicate or unfiltered rows.
     if hostel_id:
 
-        query = (
-
-            query
-
-            .join(Student.allocations)
-
-            .join(RoomAllocation.room)
-
-            .filter(Room.hostel_id == hostel_id)
-
+        query = query.filter(
+            Student.allocations.any(
+                (RoomAllocation.allocation_status == "Allocated") &
+                RoomAllocation.room.has(Room.hostel_id == hostel_id)
+            )
         )
 
     students = (
@@ -516,15 +521,20 @@ def update_student(student_id, data):
             return None, "Aadhaar number already exists"
 
     # Date Conversion
-    dob = datetime.strptime(
-        data.get("date_of_birth"),
-        "%Y-%m-%d"
-    ).date()
+    try:
+        dob = datetime.strptime(
+            data.get("date_of_birth"),
+            "%Y-%m-%d"
+        ).date()
 
-    admission_date = datetime.strptime(
-        data.get("admission_date"),
-        "%Y-%m-%d"
-    ).date()
+        admission_date = datetime.strptime(
+            data.get("admission_date"),
+            "%Y-%m-%d"
+        ).date()
+    except (ValueError, TypeError):
+        return None, {
+            "date_of_birth": "Date of birth and admission date must be valid dates (YYYY-MM-DD)."
+        }
 
     # Update Fields
     student.full_name = data.get("full_name")
@@ -561,6 +571,36 @@ def delete_student(student_id):
 
     if student is None:
         return False
+
+    # ==================================================
+    # Cascade-clean related records first.
+    # None of these foreign keys cascade automatically at
+    # the DB level, so deleting a student who has any fee,
+    # complaint, or room allocation would otherwise fail
+    # with a foreign key violation.
+    # ==================================================
+
+    # --- Room Allocations ---
+    # If the student currently occupies a room, free up that
+    # bed before removing the allocation record, so the room's
+    # available_beds count stays accurate.
+    allocations = RoomAllocation.query.filter_by(student_id=student_id).all()
+    for allocation in allocations:
+        if allocation.allocation_status == "Allocated" and allocation.room:
+            room = allocation.room
+            room.available_beds = min(room.total_beds, room.available_beds + 1)
+            if room.available_beds > 0 and room.status != "Maintenance":
+                room.status = "Available"
+        db.session.delete(allocation)
+
+    # --- Fees (and their payments) ---
+    fees = Fee.query.filter_by(student_id=student_id).all()
+    for fee in fees:
+        FeePayment.query.filter_by(fee_id=fee.id).delete()
+        db.session.delete(fee)
+
+    # --- Complaints ---
+    Complaint.query.filter_by(student_id=student_id).delete()
 
     db.session.delete(student)
 

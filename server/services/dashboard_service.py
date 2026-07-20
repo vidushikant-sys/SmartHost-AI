@@ -72,11 +72,11 @@ def get_dashboard_data(hostel_id=None):
     student_query = Student.query
 
     if hostel_id:
-        student_query = (
-            student_query
-            .join(RoomAllocation, RoomAllocation.student_id == Student.id)
-            .join(Room, RoomAllocation.room_id == Room.id)
-            .filter(Room.hostel_id == hostel_id)
+        student_query = student_query.filter(
+            Student.allocations.any(
+                (RoomAllocation.allocation_status == "Allocated") &
+                RoomAllocation.room.has(Room.hostel_id == hostel_id)
+            )
         )
 
     total_students = student_query.count()
@@ -248,12 +248,15 @@ def get_dashboard_data(hostel_id=None):
     complaint_query = Complaint.query
 
     if hostel_id:
-        complaint_query = (
-            complaint_query
-            .join(Student, Complaint.student_id == Student.id)
-            .join(RoomAllocation, RoomAllocation.student_id == Student.id)
-            .join(Room, RoomAllocation.room_id == Room.id)
-            .filter(Room.hostel_id == hostel_id)
+        complaint_query = complaint_query.filter(
+            Complaint.student_id.in_(
+                db.session.query(Student.id).filter(
+                    Student.allocations.any(
+                        (RoomAllocation.allocation_status == "Allocated") &
+                        RoomAllocation.room.has(Room.hostel_id == hostel_id)
+                    )
+                )
+            )
         )
 
     total_complaints = complaint_query.count()

@@ -14,6 +14,19 @@ from validators.complaint_validator import ComplaintValidator
 
 def complaint_to_dict(complaint):
 
+    hostel_name = None
+    room_number = None
+
+    if complaint.student and complaint.student.allocations:
+        active = next(
+            (a for a in complaint.student.allocations if a.allocation_status == "Allocated"),
+            None,
+        )
+        if active and active.room:
+            room_number = active.room.room_number
+            if active.room.hostel:
+                hostel_name = active.room.hostel.title
+
     return {
 
         "id": complaint.id,
@@ -23,6 +36,10 @@ def complaint_to_dict(complaint):
         "student_name": complaint.student.full_name
         if complaint.student
         else None,
+
+        "hostel_name": hostel_name,
+
+        "room_number": room_number,
 
         "title": complaint.title,
 
@@ -101,7 +118,7 @@ def create_complaint(data):
 
     db.session.commit()
 
-    return complaint, None
+    return complaint_to_dict(complaint), None
 # ==================================================
 # Get All Complaints
 # ==================================================
@@ -118,18 +135,15 @@ def get_all_complaints(hostel_id=None):
         from models.room_allocation import RoomAllocation
         from models.room import Room
 
-        query = (
-
-            query
-
-            .join(Student, Complaint.student_id == Student.id)
-
-            .join(RoomAllocation, RoomAllocation.student_id == Student.id)
-
-            .join(Room, RoomAllocation.room_id == Room.id)
-
-            .filter(Room.hostel_id == hostel_id)
-
+        query = query.filter(
+            Complaint.student_id.in_(
+                db.session.query(Student.id).filter(
+                    Student.allocations.any(
+                        (RoomAllocation.allocation_status == "Allocated") &
+                        RoomAllocation.room.has(Room.hostel_id == hostel_id)
+                    )
+                )
+            )
         )
 
     complaints = query.order_by(
@@ -217,7 +231,7 @@ def update_complaint(complaint_id, data):
 
     db.session.commit()
 
-    return complaint, None
+    return complaint_to_dict(complaint), None
 # ==================================================
 # Delete Complaint
 # ==================================================
@@ -240,36 +254,54 @@ def delete_complaint(complaint_id):
 # Complaint Dashboard Statistics
 # ==================================================
 
-def get_complaint_stats():
+def get_complaint_stats(hostel_id=None):
 
-    total = Complaint.query.count()
+    query = Complaint.query
 
-    open_count = Complaint.query.filter_by(
-        status="Open"
+    if hostel_id:
+
+        from models.room_allocation import RoomAllocation
+        from models.room import Room
+
+        query = query.filter(
+            Complaint.student_id.in_(
+                db.session.query(Student.id).filter(
+                    Student.allocations.any(
+                        (RoomAllocation.allocation_status == "Allocated") &
+                        RoomAllocation.room.has(Room.hostel_id == hostel_id)
+                    )
+                )
+            )
+        )
+
+    total = query.count()
+
+    open_count = query.filter(
+        Complaint.status == "Open"
     ).count()
 
-    in_progress = Complaint.query.filter_by(
-        status="In Progress"
+    in_progress = query.filter(
+        Complaint.status == "In Progress"
     ).count()
 
-    resolved = Complaint.query.filter_by(
-        status="Resolved"
+    resolved = query.filter(
+        Complaint.status == "Resolved"
     ).count()
 
-    low_priority = Complaint.query.filter_by(
-        priority="Low"
+    low_priority = query.filter(
+        Complaint.priority == "Low"
     ).count()
 
-    medium_priority = Complaint.query.filter_by(
-        priority="Medium"
+    medium_priority = query.filter(
+        Complaint.priority == "Medium"
     ).count()
 
-    high_priority = Complaint.query.filter_by(
-        priority="High"
+    high_priority = query.filter(
+        Complaint.priority == "High"
     ).count()
 
-    emergency_priority = Complaint.query.filter_by(
-        priority="Emergency"
+    emergency_priority = query.filter(
+        Complaint.priority == "Emergency"
     ).count()
 
     return {

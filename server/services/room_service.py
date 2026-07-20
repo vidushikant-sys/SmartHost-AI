@@ -99,9 +99,20 @@ def delete_room(room_id):
     room = Room.query.get(room_id)
 
     if room is None:
-        return False
+        return False, "Room not found"
+
+    # Fee has a NOT NULL room_id — deleting fee history silently isn't
+    # safe, so block the room delete instead and tell the admin why.
+    from models.fee import Fee
+    if Fee.query.filter_by(room_id=room_id).first():
+        return False, "This room has fee records linked to it and can't be deleted."
+
+    # Cascade-clean allocation history (current + past occupants) —
+    # RoomAllocation.room_id doesn't cascade automatically at the DB level.
+    from models.room_allocation import RoomAllocation
+    RoomAllocation.query.filter_by(room_id=room_id).delete()
 
     db.session.delete(room)
     db.session.commit()
 
-    return True
+    return True, None
