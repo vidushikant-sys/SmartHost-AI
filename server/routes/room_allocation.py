@@ -1,5 +1,7 @@
 from flask import Blueprint, request
 
+from flask_jwt_extended import jwt_required
+
 from services.room_allocation_service import (
     allocate_room,
     get_all_allocations,
@@ -26,6 +28,7 @@ allocation_bp = Blueprint(
 # =====================================================
 
 @allocation_bp.route("/allocate", methods=["POST"])
+@jwt_required()
 def allocate():
 
     data = request.get_json()
@@ -59,6 +62,7 @@ def allocate():
 # =====================================================
 
 @allocation_bp.route("/all", methods=["GET"])
+@jwt_required()
 def all_allocations():
 
     allocations = get_all_allocations()
@@ -74,6 +78,7 @@ def all_allocations():
 # =====================================================
 
 @allocation_bp.route("/student/<int:student_id>", methods=["GET"])
+@jwt_required()
 def allocation_by_student(student_id):
 
     allocation = get_student_allocation(student_id)
@@ -96,6 +101,7 @@ def allocation_by_student(student_id):
 # =====================================================
 
 @allocation_bp.route("/room/<int:room_id>", methods=["GET"])
+@jwt_required()
 def allocation_by_room(room_id):
 
     allocations = get_room_allocations(room_id)
@@ -109,6 +115,7 @@ def allocation_by_room(room_id):
 # =====================================================
 
 @allocation_bp.route("/transfer/<int:student_id>", methods=["PUT"])
+@jwt_required()
 def transfer(student_id):
 
     data = request.get_json()
@@ -150,6 +157,7 @@ def transfer(student_id):
 # =====================================================
 
 @allocation_bp.route("/vacate/<int:student_id>", methods=["PUT"])
+@jwt_required()
 def vacate(student_id):
 
     data = request.get_json()

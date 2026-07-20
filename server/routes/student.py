@@ -1,5 +1,7 @@
 from flask import Blueprint, request
 
+from flask_jwt_extended import jwt_required
+
 from services.student_service import (
     create_student,
     get_all_students,
@@ -21,6 +23,7 @@ student_bp = Blueprint(
 # Add Student
 # ==================================================
 @student_bp.route("/add", methods=["POST"])
+@jwt_required()
 def add_student():
 
     data = request.get_json()
@@ -54,6 +57,7 @@ def add_student():
 # Get All Students
 # ==================================================
 @student_bp.route("/all", methods=["GET"])
+@jwt_required()
 def all_students():
 
     hostel_id = request.args.get("hostel_id", type=int)
@@ -69,6 +73,7 @@ def all_students():
 # Get Student By ID
 # ==================================================
 @student_bp.route("/<int:student_id>", methods=["GET"])
+@jwt_required()
 def student_details(student_id):
 
     student = get_student_by_id(student_id)
@@ -89,6 +94,7 @@ def student_details(student_id):
 # Update Student
 # ==================================================
 @student_bp.route("/update/<int:student_id>", methods=["PUT"])
+@jwt_required()
 def edit_student(student_id):
 
     data = request.get_json()
@@ -127,6 +133,7 @@ def edit_student(student_id):
 # Delete Student
 # ==================================================
 @student_bp.route("/delete/<int:student_id>", methods=["DELETE"])
+@jwt_required()
 def remove_student(student_id):
 
     deleted = delete_student(student_id)

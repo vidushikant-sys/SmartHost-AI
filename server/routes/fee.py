@@ -5,6 +5,8 @@ RESTful API endpoints for fee and payment management.
 
 from flask import Blueprint, request, jsonify
 
+from flask_jwt_extended import jwt_required
+
 from services.fee_service import (
     create_fee,
     get_all_fees,
@@ -38,6 +40,7 @@ fee_bp = Blueprint("fee", __name__, url_prefix="/api")
 # ============================================================
 
 @fee_bp.route("/fees", methods=["POST"])
+@jwt_required()
 def create_fee_route():
     """Create a new monthly fee."""
     try:
@@ -56,6 +59,7 @@ def create_fee_route():
 
 
 @fee_bp.route("/fees", methods=["GET"])
+@jwt_required()
 def get_all_fees_route():
     """Get all fees."""
     try:
@@ -74,6 +78,7 @@ def get_all_fees_route():
 
 
 @fee_bp.route("/fees/<int:fee_id>", methods=["GET"])
+@jwt_required()
 def get_fee_by_id_route(fee_id):
     """Get a specific fee by ID."""
     try:
@@ -90,6 +95,7 @@ def get_fee_by_id_route(fee_id):
 
 
 @fee_bp.route("/fees/<int:fee_id>", methods=["PUT"])
+@jwt_required()
 def update_fee_route(fee_id):
     """Update an existing fee."""
     try:
@@ -109,6 +115,7 @@ def update_fee_route(fee_id):
 
 
 @fee_bp.route("/fees/<int:fee_id>", methods=["DELETE"])
+@jwt_required()
 def delete_fee_route(fee_id):
     """Delete a fee."""
     try:
@@ -129,6 +136,7 @@ def delete_fee_route(fee_id):
 # ============================================================
 
 @fee_bp.route("/fees/student/<int:student_id>", methods=["GET"])
+@jwt_required()
 def get_student_fee_history_route(student_id):
     """Get all fees for a student."""
     try:
@@ -146,6 +154,7 @@ def get_student_fee_history_route(student_id):
 
 
 @fee_bp.route("/fees/student/<int:student_id>/<int:month>/<int:year>", methods=["GET"])
+@jwt_required()
 def get_student_month_fee_route(student_id, month, year):
     """Get a student's fee for a specific month and year."""
     try:
@@ -166,6 +175,7 @@ def get_student_month_fee_route(student_id, month, year):
 # ============================================================
 
 @fee_bp.route("/fees/hostel/<int:hostel_id>", methods=["GET"])
+@jwt_required()
 def get_hostel_fees_route(hostel_id):
     """Get all fees for a hostel."""
     try:
@@ -183,6 +193,7 @@ def get_hostel_fees_route(hostel_id):
 
 
 @fee_bp.route("/fees/room/<int:room_id>", methods=["GET"])
+@jwt_required()
 def get_room_fees_route(room_id):
     """Get all fees for a room."""
     try:
@@ -204,6 +215,7 @@ def get_room_fees_route(room_id):
 # ============================================================
 
 @fee_bp.route("/fees/month/<int:month>/<int:year>", methods=["GET"])
+@jwt_required()
 def get_monthly_fees_route(month, year):
     """Get all fees for a specific month and year."""
     try:
@@ -221,6 +233,7 @@ def get_monthly_fees_route(month, year):
 
 
 @fee_bp.route("/fees/pending", methods=["GET"])
+@jwt_required()
 def get_pending_fees_route():
     """Get all pending fees (not fully paid)."""
     try:
@@ -239,6 +252,7 @@ def get_pending_fees_route():
 
 
 @fee_bp.route("/fees/paid", methods=["GET"])
+@jwt_required()
 def get_paid_fees_route():
     """Get all fully paid fees."""
     try:
@@ -256,6 +270,7 @@ def get_paid_fees_route():
 
 
 @fee_bp.route("/fees/overdue", methods=["GET"])
+@jwt_required()
 def get_overdue_fees_route():
     """Get all overdue fees."""
     try:
@@ -277,6 +292,7 @@ def get_overdue_fees_route():
 # ============================================================
 
 @fee_bp.route("/fees/<int:fee_id>/pay", methods=["POST"])
+@jwt_required()
 def pay_fee_route(fee_id):
     """Process a fee payment (full or partial)."""
     try:
@@ -300,6 +316,7 @@ def pay_fee_route(fee_id):
 # ============================================================
 
 @fee_bp.route("/payments", methods=["POST"])
+@jwt_required()
 def add_payment_route():
     """Add a payment to a fee."""
     try:
@@ -319,6 +336,7 @@ def add_payment_route():
 
 
 @fee_bp.route("/payments", methods=["GET"])
+@jwt_required()
 def get_all_payments_route():
     """Get all payments with fee and student details."""
     try:
@@ -335,6 +353,7 @@ def get_all_payments_route():
 
 
 @fee_bp.route("/payments/<int:payment_id>", methods=["GET"])
+@jwt_required()
 def get_payment_route(payment_id):
     """Get a specific payment with fee and student details."""
     try:
@@ -351,6 +370,7 @@ def get_payment_route(payment_id):
 
 
 @fee_bp.route("/payments/<int:payment_id>", methods=["DELETE"])
+@jwt_required()
 def delete_payment_route(payment_id):
     """Delete a payment and recalculate fee status."""
     try:
@@ -371,6 +391,7 @@ def delete_payment_route(payment_id):
 # ============================================================
 
 @fee_bp.route("/payments/history/<int:fee_id>", methods=["GET"])
+@jwt_required()
 def get_payment_history_route(fee_id):
     """Get payment history for a specific fee."""
     try:
@@ -387,6 +408,7 @@ def get_payment_history_route(fee_id):
 
 
 @fee_bp.route("/payments/student/<int:student_id>", methods=["GET"])
+@jwt_required()
 def get_student_payment_history_route(student_id):
     """Get payment history for all fees of a student."""
     try:
@@ -408,6 +430,7 @@ def get_student_payment_history_route(student_id):
 # ============================================================
 
 @fee_bp.route("/fees/dashboard", methods=["GET"])
+@jwt_required()
 def get_fee_dashboard_route():
     """Get fee management dashboard statistics."""
     try:
@@ -425,6 +448,7 @@ def get_fee_dashboard_route():
 
 
 @fee_bp.route("/fees/monthly-collection/<int:month>/<int:year>", methods=["GET"])
+@jwt_required()
 def get_monthly_collection_route(month, year):
     """Get monthly collection report for a specific month and year."""
     try:
