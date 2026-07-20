@@ -29,6 +29,21 @@ import RoomList from "../pages/rooms/RoomList";
 import AddRoom from "../pages/rooms/AddRoom";
 import EditRoom from "../pages/rooms/EditRoom";
 import RoomDetails from "../pages/rooms/RoomDetails";
+import AllocateRoomPage from "../pages/rooms/AllocateRoomPage";
+
+// ======================
+// Fee Module
+// ======================
+import FeeList from "../pages/fees/FeeList";
+import GenerateFee from "../pages/fees/GenerateFee";
+import FeeDetails from "../pages/fees/FeeDetails";
+
+// ======================
+// Complaint Module
+// ======================
+import ComplaintList from "../pages/complaints/ComplaintList";
+import FileComplaint from "../pages/complaints/FileComplaint";
+import ComplaintDetails from "../pages/complaints/ComplaintDetails";
 
 function AppRoutes() {
   return (
@@ -135,6 +150,14 @@ function AppRoutes() {
               }
             />
             <Route
+              path="/rooms/allocate"
+              element={
+                <ProtectedRoute>
+                  <AllocateRoomPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/rooms/:id"
               element={
                 <ProtectedRoute>
@@ -147,6 +170,58 @@ function AppRoutes() {
               element={
                 <ProtectedRoute>
                   <EditRoom />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= Fee Routes ================= */}
+            <Route
+              path="/fees"
+              element={
+                <ProtectedRoute>
+                  <FeeList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fees/generate"
+              element={
+                <ProtectedRoute>
+                  <GenerateFee />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fees/:id"
+              element={
+                <ProtectedRoute>
+                  <FeeDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= Complaint Routes ================= */}
+            <Route
+              path="/complaints"
+              element={
+                <ProtectedRoute>
+                  <ComplaintList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/complaints/add"
+              element={
+                <ProtectedRoute>
+                  <FileComplaint />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/complaints/:id"
+              element={
+                <ProtectedRoute>
+                  <ComplaintDetails />
                 </ProtectedRoute>
               }
             />

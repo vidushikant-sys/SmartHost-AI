@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 
 class StudentValidator:
@@ -169,6 +170,36 @@ class StudentValidator:
         elif len(pincode) != 6:
 
             errors["pincode"] = "Pincode must be exactly 6 digits."
+
+        # ==========================
+        # Date of Birth
+        # ==========================
+        date_of_birth = str(data.get("date_of_birth", "")).strip()
+
+        if not date_of_birth:
+
+            errors["date_of_birth"] = "Date of birth is required."
+
+        else:
+            try:
+                datetime.strptime(date_of_birth, "%Y-%m-%d")
+            except ValueError:
+                errors["date_of_birth"] = "Date of birth must be in YYYY-MM-DD format."
+
+        # ==========================
+        # Admission Date
+        # ==========================
+        admission_date = str(data.get("admission_date", "")).strip()
+
+        if not admission_date:
+
+            errors["admission_date"] = "Admission date is required."
+
+        else:
+            try:
+                datetime.strptime(admission_date, "%Y-%m-%d")
+            except ValueError:
+                errors["admission_date"] = "Admission date must be in YYYY-MM-DD format."
 
         # ==========================
         # Result

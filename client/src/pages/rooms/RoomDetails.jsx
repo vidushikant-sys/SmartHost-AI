@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import DeleteRoomModal from "../../components/room/DeleteRoomModal";
 import { getRoomById, deleteRoom } from "../../services/roomService";
 import { getAllHostels } from "../../services/hostelService";
+import { getRoomAllocations } from "../../services/allocationService";
 import "../../styles/room.css";
+import "../../styles/allocation.css";
 
 const STATUS_BADGE = {
   Available: "badge-active",
@@ -18,6 +20,8 @@ function RoomDetails() {
 
   const [room, setRoom] = useState(null);
   const [hostelName, setHostelName] = useState("");
+  const [occupants, setOccupants] = useState([]);
+  const [occupantsLoading, setOccupantsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
 
@@ -39,6 +43,12 @@ function RoomDetails() {
       })
       .catch((err) => mounted && setLoadError(err.message || "Failed to load room"))
       .finally(() => mounted && setLoading(false));
+
+    getRoomAllocations(id)
+      .then((data) => mounted && setOccupants(data || []))
+      .catch(() => {})
+      .finally(() => mounted && setOccupantsLoading(false));
+
     return () => {
       mounted = false;
     };
@@ -196,6 +206,34 @@ function RoomDetails() {
               </div>
             ) : (
               <p className="room-profile-description">No facilities listed.</p>
+            )}
+          </div>
+
+          <div className="room-panel room-profile-grid-full">
+            <div className="room-profile-section-title">
+              Current Occupants {!occupantsLoading && `(${occupants.length})`}
+            </div>
+            {occupantsLoading ? (
+              <p className="room-profile-description">Loading...</p>
+            ) : occupants.length === 0 ? (
+              <p className="room-profile-description">
+                No students currently allocated to this room.
+              </p>
+            ) : (
+              <div className="room-occupants-list">
+                {occupants.map((a) => (
+                  <Link
+                    key={a.id}
+                    to={`/students/${a.student_id}`}
+                    className="room-occupant-chip"
+                  >
+                    <span className="room-occupant-name">{a.student_name}</span>
+                    <span className="room-occupant-since">
+                      since {new Date(a.allocated_date).toLocaleDateString("en-IN")}
+                    </span>
+                  </Link>
+                ))}
+              </div>
             )}
           </div>
         </div>

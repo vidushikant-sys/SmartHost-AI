@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import DeleteStudentModal from "../../components/student/DeleteStudentModal";
+import AllocateRoomModal from "../../components/student/AllocateRoomModal";
+import VacateRoomModal from "../../components/student/VacateRoomModal";
 import { getStudentById, deleteStudent } from "../../services/studentService";
 import { resolveFileUrl } from "../../services/apiClient";
 import "../../styles/student.css";
@@ -88,6 +90,7 @@ function Field({ label, value }) {
 function StudentProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -95,17 +98,45 @@ function StudentProfile() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  // "allocate" | "transfer" | null — which allocation modal is open
+  const [allocationModal, setAllocationModal] = useState(null);
+  const [vacateModalOpen, setVacateModalOpen] = useState(false);
+
+  function loadStudent() {
+    setLoading(true);
+    return getStudentById(id)
+      .then((data) => setStudent(data))
+      .catch((err) => setErrorMsg(err.message || "Failed to load student"))
+      .finally(() => setLoading(false));
+  }
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     getStudentById(id)
-      .then((data) => mounted && setStudent(data))
+      .then((data) => {
+        if (!mounted) return;
+        setStudent(data);
+
+        // Came here right after "Add Student" — offer to allocate a room now.
+        if (searchParams.get("allocate") === "1" && data.allocation_status !== "Allocated") {
+          setAllocationModal("allocate");
+        }
+        setSearchParams({}, { replace: true });
+      })
       .catch((err) => mounted && setErrorMsg(err.message || "Failed to load student"))
       .finally(() => mounted && setLoading(false));
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  function handleAllocationSuccess() {
+    setAllocationModal(null);
+    setVacateModalOpen(false);
+    loadStudent();
+  }
 
   async function handleConfirmDelete() {
     setDeleting(true);
@@ -274,6 +305,32 @@ function StudentProfile() {
               <Field label="Admission Date" value={formatDate(student.admission_date)} />
               <Field label="Status" value={student.status} />
             </div>
+
+            <div className="student-allocation-actions">
+              {student.allocation_status === "Allocated" ? (
+                <>
+                  <button
+                    className="student-btn-secondary"
+                    onClick={() => setAllocationModal("transfer")}
+                  >
+                    Transfer Room
+                  </button>
+                  <button
+                    className="student-btn-danger"
+                    onClick={() => setVacateModalOpen(true)}
+                  >
+                    Vacate Room
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="student-btn-primary"
+                  onClick={() => setAllocationModal("allocate")}
+                >
+                  Allocate Room
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="student-panel">
@@ -306,6 +363,23 @@ function StudentProfile() {
         onCancel={() => setDeleteTarget(null)}
         deleting={deleting}
       />
+
+      {allocationModal && (
+        <AllocateRoomModal
+          student={student}
+          mode={allocationModal}
+          onClose={() => setAllocationModal(null)}
+          onSuccess={handleAllocationSuccess}
+        />
+      )}
+
+      {vacateModalOpen && (
+        <VacateRoomModal
+          student={student}
+          onClose={() => setVacateModalOpen(false)}
+          onSuccess={handleAllocationSuccess}
+        />
+      )}
     </DashboardLayout>
   );
 }

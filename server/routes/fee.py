@@ -411,7 +411,8 @@ def get_student_payment_history_route(student_id):
 def get_fee_dashboard_route():
     """Get fee management dashboard statistics."""
     try:
-        dashboard = get_fee_dashboard()
+        hostel_id = request.args.get("hostel_id", type=int)
+        dashboard = get_fee_dashboard(hostel_id)
         return jsonify({
             "success": True,
             "data": dashboard

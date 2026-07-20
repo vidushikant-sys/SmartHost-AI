@@ -40,6 +40,27 @@ const EMPTY_FORM = {
   status: "Active",
 };
 
+const FIELD_LABELS = {
+  full_name: "Full Name",
+  email: "Email",
+  phone: "Phone",
+  gender: "Gender",
+  date_of_birth: "Date of Birth",
+  aadhaar_number: "Aadhaar Number",
+  guardian_name: "Guardian Name",
+  guardian_phone: "Guardian Phone",
+  emergency_contact: "Emergency Contact",
+  college_name: "College Name",
+  course: "Course",
+  semester: "Semester",
+  address: "Address",
+  city: "City",
+  state: "State",
+  pincode: "Pincode",
+  admission_date: "Admission Date",
+  status: "Status",
+};
+
 function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) {
   const [form, setForm] = useState({ ...EMPTY_FORM, ...initialValues });
   const [errors, setErrors] = useState({});
@@ -98,6 +119,19 @@ function StudentForm({ initialValues, onSubmit, submitLabel = "Save Student" }) 
   return (
     <form className="student-form" onSubmit={handleSubmit}>
       {submitError && <div className="student-form-error-banner">{submitError}</div>}
+
+      {Object.keys(errors).length > 0 && (
+        <div className="student-form-error-banner">
+          <strong>Please fix the following:</strong>
+          <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
+            {Object.entries(errors).map(([field, message]) => (
+              <li key={field}>
+                {FIELD_LABELS[field] || field}: {message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="student-form-section">
         <div className="student-form-section-header">

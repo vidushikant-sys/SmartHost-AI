@@ -133,7 +133,7 @@ def allocate_room(data):
     room.available_beds -= 1
 
     if room.available_beds == 0:
-        room.status = "Full"
+        room.status = "Occupied"
 
     db.session.commit()
 
@@ -244,7 +244,7 @@ def transfer_room(student_id, data):
 
     old_room.available_beds += 1
 
-    if old_room.status == "Full":
+    if old_room.status in ("Full", "Occupied"):
         old_room.status = "Available"
 
     # -----------------------------------------
@@ -254,7 +254,7 @@ def transfer_room(student_id, data):
     new_room.available_beds -= 1
 
     if new_room.available_beds == 0:
-        new_room.status = "Full"
+        new_room.status = "Occupied"
 
     # -----------------------------------------
     # Close Old Allocation
@@ -339,7 +339,7 @@ def vacate_room(student_id, data):
 
     room.available_beds += 1
 
-    if room.available_beds > 0:
+    if room.available_beds > 0 and room.status != "Maintenance":
         room.status = "Available"
 
     db.session.commit()

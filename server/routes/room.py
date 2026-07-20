@@ -126,12 +126,12 @@ def update_room_details(room_id):
 @jwt_required()
 def delete_room_details(room_id):
 
-    deleted = delete_room(room_id)
+    deleted, error = delete_room(room_id)
 
     if not deleted:
         return error_response(
-            "Room not found",
-            404
+            error or "Room not found",
+            404 if error == "Room not found" else 400
         )
 
     return success_response(
