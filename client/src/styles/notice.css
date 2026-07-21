@@ -1,0 +1,139 @@
+/* ==========================================================
+   Notice Module — extends room.css/fee.css shared tokens
+========================================================== */
+
+.notice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .notice-grid { grid-template-columns: 1fr; }
+}
+
+.notice-card {
+  background: white;
+  border: 1px solid #E7EBF3;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.notice-card:hover {
+  box-shadow: var(--shadow, 0 8px 24px rgba(15, 23, 42, 0.08));
+  transform: translateY(-1px);
+}
+
+.notice-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notice-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.notice-category-icon {
+  font-size: 18px;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.notice-card-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.notice-priority-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.notice-card-description {
+  font-size: 13.5px;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.notice-read-more {
+  color: #2563EB;
+  font-weight: 600;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.notice-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.notice-card-tag {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-light);
+  background: #F1F5F9;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.notice-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.notice-card-posted {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* ---------- Scope toggle (Add/Edit form) ---------- */
+.notice-scope-toggle {
+  display: inline-flex;
+  background: #F1F5F9;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.notice-scope-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.notice-scope-btn.active {
+  background: white;
+  color: #2563EB;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.notice-scope-btn svg {
+  flex-shrink: 0;
+}

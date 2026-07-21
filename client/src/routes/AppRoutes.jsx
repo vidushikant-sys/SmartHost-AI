@@ -45,6 +45,13 @@ import ComplaintList from "../pages/complaints/ComplaintList";
 import FileComplaint from "../pages/complaints/FileComplaint";
 import ComplaintDetails from "../pages/complaints/ComplaintDetails";
 
+// ======================
+// Notice Module
+// ======================
+import NoticeList from "../pages/notices/NoticeList";
+import AddNotice from "../pages/notices/AddNotice";
+import EditNotice from "../pages/notices/EditNotice";
+
 function AppRoutes() {
   return (
     <AuthProvider>
@@ -222,6 +229,32 @@ function AppRoutes() {
               element={
                 <ProtectedRoute>
                   <ComplaintDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= Notice Routes ================= */}
+            <Route
+              path="/notices"
+              element={
+                <ProtectedRoute>
+                  <NoticeList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notices/new"
+              element={
+                <ProtectedRoute>
+                  <AddNotice />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notices/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditNotice />
                 </ProtectedRoute>
               }
             />
