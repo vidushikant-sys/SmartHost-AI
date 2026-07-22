@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "../../styles/sidebar.css";
 
@@ -58,10 +57,13 @@ const NAV_SECTIONS = [
         label: "Fees",
         path: "/fees",
         icon: (
-          <path
-            d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-            stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none"
-          />
+          <g stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none">
+            <path d="M6 3h12" />
+            <path d="M6 8h12" />
+            <path d="M6 13h3" />
+            <path d="M9 13c6.667 0 6.667-10 0-10" />
+            <path d="m6 13 8.5 8" />
+          </g>
         ),
       },
       {
@@ -95,6 +97,16 @@ const NAV_SECTIONS = [
         icon: (
           <path
             d="M18 20V10M12 20V4M6 20v-6"
+            stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none"
+          />
+        ),
+      },
+      {
+        label: "Notifications",
+        path: "/notifications",
+        icon: (
+          <path
+            d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 0 1-3.46 0"
             stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none"
           />
         ),

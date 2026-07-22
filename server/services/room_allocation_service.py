@@ -6,6 +6,7 @@ from models.student import Student
 from models.room import Room
 from models.room_allocation import RoomAllocation
 from validators.allocation_validator import AllocationValidator
+from services.notification_service import notify_student
 
 
 # =====================================================
@@ -136,6 +137,13 @@ def allocate_room(data):
         room.status = "Occupied"
 
     db.session.commit()
+
+    notify_student(
+        student_id,
+        "Room Allocated",
+        f"Room {room.room_number} has been allocated to you effective {allocated_date}.",
+        type="Allocation"
+    )
 
     return allocation, None
 # =====================================================
@@ -285,6 +293,13 @@ def transfer_room(student_id, data):
 
     db.session.commit()
 
+    notify_student(
+        student_id,
+        "Room Transferred",
+        f"You have been transferred from Room {old_room.room_number} to Room {new_room.room_number}, effective {transfer_date}.",
+        type="Allocation"
+    )
+
     return new_allocation, None
 # =====================================================
 # Vacate Room
@@ -343,5 +358,12 @@ def vacate_room(student_id, data):
         room.status = "Available"
 
     db.session.commit()
+
+    notify_student(
+        student_id,
+        "Room Vacated",
+        f"Room {room.room_number} has been marked as vacated, effective {vacated_date}.",
+        type="Allocation"
+    )
 
     return allocation, None

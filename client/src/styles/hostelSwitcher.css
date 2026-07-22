@@ -9,14 +9,14 @@
   height: 42px;
   padding: 0 14px;
   border-radius: 12px;
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   border: 1px solid transparent;
   transition: 0.2s;
   max-width: 220px;
 }
 
 .hostel-switcher-trigger:hover {
-  background: #E2E8F0;
+  background: var(--border-color);
 }
 
 .hostel-switcher-trigger:disabled {
@@ -34,7 +34,7 @@
 .hostel-switcher-label {
   font-size: 13.5px;
   font-weight: 600;
-  color: #1E293B;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -43,7 +43,7 @@
 .hostel-switcher-chevron {
   width: 15px;
   height: 15px;
-  color: #64748B;
+  color: var(--text-light, #64748B);
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
@@ -59,8 +59,8 @@
   min-width: 240px;
   max-height: 320px;
   overflow-y: auto;
-  background: white;
-  border: 1px solid #E7EBF3;
+  background: var(--white);
+  border: 1px solid var(--border-color, #E7EBF3);
   border-radius: 14px;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
   padding: 8px;
@@ -83,13 +83,13 @@
   border-radius: 9px;
   font-size: 13.5px;
   font-weight: 500;
-  color: #334155;
+  color: var(--text);
   text-align: left;
   transition: background 0.15s ease;
 }
 
 .hostel-switcher-item:hover {
-  background: #F1F5F9;
+  background: var(--background);
 }
 
 .hostel-switcher-item.active {
@@ -105,7 +105,7 @@
 
 .hostel-switcher-divider {
   height: 1px;
-  background: #E7EBF3;
+  background: var(--border-color, #E7EBF3);
   margin: 6px 4px;
 }
 

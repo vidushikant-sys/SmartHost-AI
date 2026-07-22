@@ -6,6 +6,7 @@ from models.complaint import Complaint
 from models.student import Student
 
 from validators.complaint_validator import ComplaintValidator
+from services.notification_service import notify_student
 
 
 # ==================================================
@@ -117,6 +118,13 @@ def create_complaint(data):
     db.session.add(complaint)
 
     db.session.commit()
+
+    notify_student(
+        student_id,
+        "Complaint Registered",
+        f"Your complaint \"{complaint.title}\" has been registered and is now Open.",
+        type="Complaint"
+    )
 
     return complaint_to_dict(complaint), None
 # ==================================================
@@ -230,6 +238,15 @@ def update_complaint(complaint_id, data):
         complaint.admin_reply = data["admin_reply"]
 
     db.session.commit()
+
+    if "status" in data:
+        notify_student(
+            complaint.student_id,
+            "Complaint Status Updated",
+            f"Your complaint \"{complaint.title}\" is now marked as {complaint.status}."
+            + (f" Admin reply: {complaint.admin_reply}" if complaint.admin_reply else ""),
+            type="Complaint"
+        )
 
     return complaint_to_dict(complaint), None
 # ==================================================

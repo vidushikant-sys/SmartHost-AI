@@ -1,0 +1,330 @@
+@import "./variables.css";
+
+.notif-center {
+  max-width: 920px;
+}
+
+.notif-mark-all-page {
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 9px;
+  white-space: nowrap;
+}
+
+.notif-mark-all-page:hover {
+  opacity: 0.9;
+}
+
+.notif-mark-all-page:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Stats ---------- */
+.notif-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.notif-stat-card {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notif-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.notif-stat-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.notif-stat-card.accent-warning .notif-stat-value {
+  color: var(--warning);
+}
+
+.notif-stat-card.accent-success .notif-stat-value {
+  color: var(--success);
+}
+
+/* ---------- Filters ---------- */
+.notif-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.notif-search {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--background);
+  border: 1.5px solid var(--border-color);
+  border-radius: 9px;
+  padding: 0 12px;
+  height: 40px;
+  color: var(--text-light);
+}
+
+.notif-search svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.notif-search input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.notif-filters select {
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 9px;
+  background: var(--background);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ---------- Full list ---------- */
+.notif-full-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-full-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.notif-full-item:last-child {
+  border-bottom: none;
+}
+
+.notif-full-item.unread {
+  background: var(--primary-light);
+  margin: 0 -14px;
+  padding: 14px;
+  border-radius: 10px;
+  border-bottom-color: transparent;
+}
+
+/* --primary-light is always a light pastel tint (it comes from the
+   accent color, not the light/dark mode), so the text inside an
+   unread row must stay a fixed dark color instead of var(--text) —
+   otherwise in dark mode var(--text) turns near-white and becomes
+   unreadable on this light background. */
+.notif-full-item.unread .notif-full-title {
+  color: #0F172A;
+}
+
+.notif-full-item.unread .notif-full-message,
+.notif-full-item.unread .notif-full-meta {
+  color: #334155;
+}
+
+.notif-full-item .notif-type-dot {
+  margin-top: 6px;
+}
+
+.notif-full-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-full-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notif-full-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.notif-type-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.notif-type-pill.type-fee { background: #FEF3C7; color: #92400E; }
+.notif-type-pill.type-complaint { background: #FEE2E2; color: #991B1B; }
+.notif-type-pill.type-notice { background: #DBEAFE; color: #1E40AF; }
+.notif-type-pill.type-allocation { background: #EDE9FE; color: #5B21B6; }
+.notif-type-pill.type-general { background: #E2E8F0; color: #334155; }
+
+.notif-full-message {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.notif-full-meta {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 6px;
+}
+
+.notif-full-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.notif-action-btn {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 7px;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.notif-action-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.notif-action-btn.danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.notif-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Pagination ---------- */
+.notif-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.notif-pagination button {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  color: var(--text);
+}
+
+.notif-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notif-pagination span {
+  font-size: 12.5px;
+  color: var(--text-light);
+}
+
+/* ---------- Delete confirm modal ---------- */
+.notif-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.notif-modal {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 22px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+}
+
+.notif-modal h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.notif-modal p {
+  font-size: 13px;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.notif-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.notif-modal-cancel {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text);
+}
+
+.notif-modal-confirm {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--danger);
+  color: #fff;
+}
+
+.notif-modal-confirm:disabled,
+.notif-modal-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

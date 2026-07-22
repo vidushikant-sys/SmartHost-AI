@@ -15,7 +15,7 @@ const STATUS_BADGE = {
 
 const CATEGORY_ICON = {
   General: "📌",
-  Fee: "💰",
+  Fee: "🧾",
   Maintenance: "🔧",
   Event: "🎉",
   Hostel: "🏠",

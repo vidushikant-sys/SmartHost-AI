@@ -3,10 +3,12 @@ import DashboardLayout from "../../components/layout/DashboardLayout";
 import StatCard from "../../components/dashboard/StatCard";
 import RevenueChart from "../../components/dashboard/RevenueChart";
 import OccupancyCard from "../../components/dashboard/OccupancyCard";
+import ComplaintStatusCard from "../../components/dashboard/ComplaintStatusCard";
 import RecentActivity from "../../components/dashboard/RecentActivity";
 import QuickActions from "../../components/dashboard/QuickActions";
 import NoticeBoard from "../../components/dashboard/NoticeBoard";
 import UpcomingFees from "../../components/dashboard/UpcomingFees";
+import DateWeatherCard from "../../components/dashboard/DateWeatherCard";
 import { getDashboardOverview } from "../../services/dashboardService";
 import { useHostel } from "../../context/HostelContext";
 import "../../styles/dashboard.css";
@@ -19,7 +21,13 @@ const ICONS = {
     <path d="M3 22V12l9-6 9 6v10M9 22v-6h6v6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
   ),
   revenue: (
-    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    <g stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <path d="M6 3h12" />
+      <path d="M6 8h12" />
+      <path d="M6 13h3" />
+      <path d="M9 13c6.667 0 6.667-10 0-10" />
+      <path d="m6 13 8.5 8" />
+    </g>
   ),
   complaints: (
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -67,11 +75,6 @@ function Dashboard() {
   }, [selectedHostelId]);
 
   const stats = overview?.stats;
-  const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
 
   return (
     <DashboardLayout>
@@ -85,13 +88,7 @@ function Dashboard() {
                 : "Here's what's happening across your hostels today."}
             </p>
           </div>
-          <div className="header-date">
-            <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-              <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-            {today}
-          </div>
+          <DateWeatherCard />
         </div>
 
         {errorMsg && !loading && (
@@ -145,7 +142,7 @@ function Dashboard() {
             label="Open Complaints"
             value={stats?.complaints?.pending_complaints ?? 0}
             icon={<svg viewBox="0 0 24 24">{ICONS.complaints}</svg>}
-            color="purple"
+            color="pink"
             trend={
               stats
                 ? { direction: "up", value: `${stats.complaints.resolved_complaints} resolved` }
@@ -154,10 +151,14 @@ function Dashboard() {
           />
         </div>
 
+        <div className="top-panels-row">
+          <OccupancyCard rooms={stats?.rooms} loading={loading} />
+          <RevenueChart data={overview?.revenue || []} loading={loading} />
+          <ComplaintStatusCard complaints={stats?.complaints} loading={loading} />
+        </div>
+
         <div className="dashboard-grid">
           <div className="dashboard-main-col">
-            <RevenueChart data={overview?.revenue || []} loading={loading} />
-
             <div className="split-row">
               <RecentActivity complaints={overview?.complaints || []} loading={loading} />
               <UpcomingFees fees={overview?.upcomingFees || []} loading={loading} />
@@ -165,7 +166,6 @@ function Dashboard() {
           </div>
 
           <div className="dashboard-side-col">
-            <OccupancyCard rooms={stats?.rooms} loading={loading} />
             <QuickActions />
             <NoticeBoard notices={overview?.notices || []} loading={loading} />
           </div>

@@ -28,7 +28,7 @@
   font-size: 13.5px;
   font-family: "Poppins", sans-serif;
   color: var(--text);
-  background: white;
+  background: var(--white, #fff);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -102,5 +102,5 @@
 }
 
 .allocation-page-row:hover {
-  background: #F8FAFC;
+  background: var(--background);
 }

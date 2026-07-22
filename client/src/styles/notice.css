@@ -13,8 +13,8 @@
 }
 
 .notice-card {
-  background: white;
-  border: 1px solid #E7EBF3;
+  background: var(--white);
+  border: 1px solid var(--border-color, #E7EBF3);
   border-radius: 16px;
   padding: 18px 20px;
   display: flex;
@@ -87,7 +87,7 @@
   font-size: 11.5px;
   font-weight: 500;
   color: var(--text-light);
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   padding: 4px 10px;
   border-radius: 20px;
 }
@@ -99,7 +99,7 @@
   gap: 12px;
   margin-top: 4px;
   padding-top: 12px;
-  border-top: 1px solid #F1F5F9;
+  border-top: 1px solid var(--border-color, #F1F5F9);
 }
 
 .notice-card-posted {
@@ -110,7 +110,7 @@
 /* ---------- Scope toggle (Add/Edit form) ---------- */
 .notice-scope-toggle {
   display: inline-flex;
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   border-radius: 12px;
   padding: 4px;
   gap: 4px;
@@ -129,7 +129,7 @@
 }
 
 .notice-scope-btn.active {
-  background: white;
+  background: var(--white);
   color: #2563EB;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
 }

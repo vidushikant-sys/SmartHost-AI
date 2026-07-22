@@ -38,12 +38,21 @@ export function AuthProvider({ children }) {
     setAdmin(null);
   }
 
+  function updateAdmin(patch) {
+    setAdmin((prev) => {
+      const next = { ...(prev || {}), ...patch };
+      localStorage.setItem("admin", JSON.stringify(next));
+      return next;
+    });
+  }
+
   const value = {
     admin,
     token,
     isAuthenticated: !!token,
     login,
     logout,
+    updateAdmin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

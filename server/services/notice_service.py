@@ -2,7 +2,46 @@
 
 from config.extensions import db
 from models.notice import Notice
+from models.student import Student
+from models.room_allocation import RoomAllocation
+from models.room import Room
 from validators.notice_validator import NoticeValidator
+from services.notification_service import notify_student
+
+
+# ==================================================
+# Helper — Notify students affected by a notice
+# ==================================================
+# A Notice has no single student_id (it's a hostel-wide announcement),
+# but Notification rows are always tied to one student. So when a
+# notice is published, we fan it out: one Notification row per
+# affected student.
+#   - hostel_id set   -> only students currently allocated to a room
+#                        in that hostel.
+#   - hostel_id is None (global notice) -> every active student.
+# ==================================================
+
+def _notify_students_for_notice(notice):
+
+    query = Student.query.filter_by(status="Active")
+
+    if notice.hostel_id:
+        query = query.filter(
+            Student.allocations.any(
+                (RoomAllocation.allocation_status == "Allocated") &
+                RoomAllocation.room.has(Room.hostel_id == notice.hostel_id)
+            )
+        )
+
+    students = query.all()
+
+    for student in students:
+        notify_student(
+            student.id,
+            f"New Notice: {notice.title}",
+            notice.description,
+            type="Notice"
+        )
 
 
 # ==================================================
@@ -53,8 +92,10 @@ def create_notice(data):
 
     db.session.commit()
 
+    _notify_students_for_notice(notice)
 
     return notice, None
+
 
 
 # ==================================================

@@ -5,7 +5,8 @@ from flask_jwt_extended import jwt_required
 from services.upload_service import (
     upload_student_image,
     upload_hostel_image,
-    upload_room_image
+    upload_room_image,
+    upload_admin_avatar
 )
 
 from utils.response import (
@@ -194,6 +195,67 @@ def upload_room():
 
         print(
             "ROOM UPLOAD ERROR:",
+            e
+        )
+
+        return error_response(
+            "Internal server error",
+            500
+        )
+
+
+
+# =====================================
+# Upload Admin Avatar
+# =====================================
+
+@upload_bp.route(
+    "/admin",
+    methods=["POST"]
+)
+@jwt_required()
+def upload_admin():
+
+    try:
+
+        file = request.files.get(
+            "file"
+        )
+
+
+        if not file:
+
+            return error_response(
+                "No file provided",
+                400
+            )
+
+
+        image_path = upload_admin_avatar(
+            file
+        )
+
+
+        return success_response(
+            "Avatar uploaded successfully",
+            {
+                "image_url": image_path
+            }
+        )
+
+
+    except ValueError as e:
+
+        return error_response(
+            str(e),
+            400
+        )
+
+
+    except Exception as e:
+
+        print(
+            "ADMIN AVATAR UPLOAD ERROR:",
             e
         )
 

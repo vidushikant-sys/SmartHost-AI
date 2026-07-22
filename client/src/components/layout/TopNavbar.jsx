@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HostelSwitcher from "./HostelSwitcher";
+import NotificationBell from "../notification/NotificationBell";
+import GlobalSearch from "../search/GlobalSearch";
 import { useAuth } from "../../context/AuthContext";
+import { resolveFileUrl } from "../../services/apiClient";
 import "../../styles/topNavbar.css";
 
 function TopNavbar() {
@@ -32,33 +35,24 @@ function TopNavbar() {
 
   return (
     <header className="top-navbar">
-      <div className="top-navbar-search">
-        <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M20 20L16.5 16.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-        <input type="text" placeholder="Search students, rooms, complaints..." />
-      </div>
+      <GlobalSearch />
 
       <div className="top-navbar-right">
         <HostelSwitcher />
 
-        <button className="icon-btn" aria-label="Notifications">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path
-              d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"
-              stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"
-            />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-          </svg>
-          <span className="notif-dot" />
-        </button>
+        <NotificationBell />
 
         <div className="navbar-divider" />
 
         <div className="admin-menu" ref={menuRef}>
           <button className="admin-trigger" onClick={() => setMenuOpen((o) => !o)}>
-            <div className="avatar">{initial}</div>
+            <div className="avatar">
+              {admin.avatar_url ? (
+                <img src={resolveFileUrl(admin.avatar_url)} alt={displayName} />
+              ) : (
+                initial
+              )}
+            </div>
             <div className="admin-info">
               <strong>{displayName}</strong>
               <span>Administrator</span>

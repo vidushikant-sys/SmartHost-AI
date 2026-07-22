@@ -9,6 +9,46 @@ from validators.notification_validator import (
 
 
 # ==========================================================
+# Internal Helper — Auto-generate a notification
+# ==========================================================
+# Other services (fee, complaint, room allocation, ...) call this
+# directly whenever something notification-worthy happens, instead
+# of going through the public /notification/add API. This is what
+# actually populates the notifications table — without it being
+# called from those flows, the notification module stays empty
+# because nothing ever creates a row.
+#
+# Deliberately never raises: a notification failing to save should
+# never break the fee/complaint/allocation action that triggered it.
+# ==========================================================
+
+def notify_student(student_id, title, message, type="General"):
+
+    if not student_id:
+        return None
+
+    try:
+
+        notification = Notification(
+            student_id=student_id,
+            title=title.strip(),
+            message=message.strip(),
+            type=type,
+            is_read=False
+        )
+
+        db.session.add(notification)
+        db.session.commit()
+
+        return notification
+
+    except Exception:
+
+        db.session.rollback()
+        return None
+
+
+# ==========================================================
 # Create Notification
 # ==========================================================
 

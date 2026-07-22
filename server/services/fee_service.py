@@ -13,6 +13,7 @@ from models.student import Student
 from models.room import Room
 from models.property import Property
 from validators.fee_validator import FeeValidator
+from services.notification_service import notify_student
 
 
 # ============================================================
@@ -110,6 +111,13 @@ def create_fee(data):
     except Exception as e:
         db.session.rollback()
         raise ValueError(f"Failed to create fee: {str(e)}")
+
+    notify_student(
+        student_id,
+        "New Fee Generated",
+        f"Your fee of ₹{total_amount:.2f} for {month} {year} has been generated. Due date: {due_date}.",
+        type="Fee"
+    )
 
     return fee.to_dict()
 
@@ -447,6 +455,14 @@ def add_payment(data):
     except Exception as e:
         db.session.rollback()
         raise ValueError(f"Failed to add payment: {str(e)}")
+
+    notify_student(
+        fee.student_id,
+        "Payment Received",
+        f"A payment of ₹{payment_amount:.2f} was recorded for your {fee.month} {fee.year} fee. "
+        f"Status: {fee.payment_status}.",
+        type="Fee"
+    )
 
     return payment.to_dict()
 

@@ -1,0 +1,236 @@
+@import "./variables.css";
+
+.reports-page {
+  max-width: 1100px;
+  padding: 28px 32px 32px;
+}
+
+.reports-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.reports-month-toggle {
+  display: flex;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.reports-month-toggle button {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 7px;
+  color: var(--text-light);
+  background: transparent;
+}
+
+.reports-month-toggle button.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.reports-refresh-btn {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 9px;
+  background: var(--white);
+  border: 1.5px solid var(--border-color);
+  color: var(--text);
+}
+
+.reports-refresh-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.reports-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- KPI cards ---------- */
+.reports-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.reports-kpi-card {
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reports-kpi-value {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.reports-kpi-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.reports-kpi-sub {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* ---------- Charts ---------- */
+.reports-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.reports-chart-card {
+  margin-bottom: 0;
+}
+
+.reports-chart-wrap {
+  height: 260px;
+  position: relative;
+}
+
+/* ---------- Complaint insights ---------- */
+.reports-complaint-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.reports-doughnut-wrap {
+  height: 200px;
+  position: relative;
+}
+
+.reports-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reports-category-heading {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.reports-category-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+}
+
+.reports-category-label {
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reports-category-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--background);
+  overflow: hidden;
+}
+
+.reports-category-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.reports-category-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ---------- Hostel performance table ---------- */
+.reports-table-wrap {
+  overflow-x: auto;
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.reports-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-light);
+  border-bottom: 1.5px solid var(--border-color);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.reports-table th:hover {
+  color: var(--primary);
+}
+
+.reports-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.reports-table-name {
+  font-weight: 600;
+}
+
+.reports-occupancy-pill {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+}
+
+.reports-due {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .reports-complaint-grid {
+    grid-template-columns: 1fr;
+  }
+}

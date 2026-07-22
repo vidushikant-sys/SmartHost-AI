@@ -51,7 +51,13 @@ function StudentStats({ students = [], loading }) {
       value: feeDue,
       color: "red",
       icon: (
-        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <g stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          <path d="M6 3h12" />
+          <path d="M6 8h12" />
+          <path d="M6 13h3" />
+          <path d="M9 13c6.667 0 6.667-10 0-10" />
+          <path d="m6 13 8.5 8" />
+        </g>
       ),
     },
   ];
