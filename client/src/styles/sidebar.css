@@ -105,7 +105,7 @@
 }
 
 .nav-item.active {
-  background: rgba(37, 99, 235, 0.18);
+  background: color-mix(in srgb, var(--primary, #2563EB) 25%, transparent);
   color: white;
   position: relative;
 }
@@ -118,7 +118,7 @@
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: #3B82F6;
+  background: var(--primary, #3B82F6);
 }
 
 .nav-icon {
@@ -131,7 +131,7 @@
 }
 
 .nav-item.active .nav-icon {
-  color: #60A5FA;
+  color: var(--primary-light, #60A5FA);
 }
 
 .nav-icon svg {

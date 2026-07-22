@@ -1,5 +1,6 @@
 import os
 import re
+import json
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import (
@@ -10,10 +11,32 @@ from flask_jwt_extended import (
 
 from config.extensions import db, bcrypt
 from models.admin import Admin
+from services.activity_log_service import create_activity_log
 
 auth = Blueprint("auth", __name__)
 
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+DEFAULT_NOTIFICATION_PREFS = {
+    "email_alerts": True,
+    "fee_reminders": True,
+    "complaint_updates": True,
+    "notice_alerts": True,
+}
+
+
+def _log_activity(admin_id, module, action, description):
+    """Best-effort activity log write. Never blocks the main response."""
+    try:
+        create_activity_log({
+            "admin_id": admin_id,
+            "module": module,
+            "action": action,
+            "description": description,
+            "ip_address": request.remote_addr,
+        })
+    except Exception:
+        pass
 
 
 # ==========================
@@ -129,15 +152,13 @@ def login():
     # Generate JWT Token
     access_token = create_access_token(identity=str(admin.id))
 
+    _log_activity(admin.id, "Authentication", "Login", f"{admin.email} logged in")
+
     return jsonify({
         "success": True,
         "message": "Login Successful",
         "token": access_token,
-        "admin": {
-            "id": admin.id,
-            "full_name": admin.full_name,
-            "email": admin.email
-        }
+        "admin": admin.to_dict()
     }), 200
     # ==========================
 # Admin Profile API
@@ -158,9 +179,235 @@ def profile():
 
     return jsonify({
         "success": True,
-        "admin": {
-            "id": admin.id,
-            "full_name": admin.full_name,
-            "email": admin.email
+        "admin": admin.to_dict()
+    }), 200
+
+
+# ==========================
+# Update Profile API
+# ==========================
+@auth.route("/profile", methods=["PUT"])
+@jwt_required()
+def update_profile():
+
+    admin_id = get_jwt_identity()
+    admin = Admin.query.get(admin_id)
+
+    if not admin:
+        return jsonify({
+            "success": False,
+            "message": "Admin not found"
+        }), 404
+
+    data = request.get_json(silent=True) or {}
+
+    full_name = (data.get("full_name") or "").strip()
+    phone = (data.get("phone") or "").strip()
+    avatar_url = data.get("avatar_url")
+
+    if full_name:
+        if len(full_name) < 2:
+            return jsonify({
+                "success": False,
+                "message": "Full name must be at least 2 characters"
+            }), 400
+        admin.full_name = full_name
+
+    if "phone" in data:
+        if phone and not re.match(r"^[0-9+\-\s]{7,20}$", phone):
+            return jsonify({
+                "success": False,
+                "message": "Enter a valid phone number"
+            }), 400
+        admin.phone = phone or None
+
+    if avatar_url is not None:
+        admin.avatar_url = avatar_url or None
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": "Failed to update profile"
+        }), 500
+
+    _log_activity(admin.id, "Authentication", "Update", "Profile details updated")
+
+    return jsonify({
+        "success": True,
+        "message": "Profile updated successfully",
+        "admin": admin.to_dict()
+    }), 200
+
+
+# ==========================
+# Change Password API
+# ==========================
+@auth.route("/change-password", methods=["PUT"])
+@jwt_required()
+def change_password():
+
+    admin_id = get_jwt_identity()
+    admin = Admin.query.get(admin_id)
+
+    if not admin:
+        return jsonify({
+            "success": False,
+            "message": "Admin not found"
+        }), 404
+
+    data = request.get_json(silent=True) or {}
+
+    current_password = data.get("current_password") or ""
+    new_password = data.get("new_password") or ""
+
+    if not current_password or not new_password:
+        return jsonify({
+            "success": False,
+            "message": "Current and new password are required"
+        }), 400
+
+    if not bcrypt.check_password_hash(admin.password, current_password):
+        return jsonify({
+            "success": False,
+            "message": "Current password is incorrect"
+        }), 401
+
+    if len(new_password) < 6:
+        return jsonify({
+            "success": False,
+            "message": "New password must be at least 6 characters long"
+        }), 400
+
+    if bcrypt.check_password_hash(admin.password, new_password):
+        return jsonify({
+            "success": False,
+            "message": "New password must be different from the current password"
+        }), 400
+
+    admin.password = bcrypt.generate_password_hash(new_password).decode("utf-8")
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": "Failed to update password"
+        }), 500
+
+    _log_activity(admin.id, "Authentication", "Update", "Password changed")
+
+    return jsonify({
+        "success": True,
+        "message": "Password changed successfully"
+    }), 200
+
+
+# ==========================
+# Get Preferences API (Appearance + Notifications)
+# ==========================
+@auth.route("/preferences", methods=["GET"])
+@jwt_required()
+def get_preferences():
+
+    admin_id = get_jwt_identity()
+    admin = Admin.query.get(admin_id)
+
+    if not admin:
+        return jsonify({
+            "success": False,
+            "message": "Admin not found"
+        }), 404
+
+    try:
+        prefs = json.loads(admin.notification_prefs) if admin.notification_prefs else {}
+    except (TypeError, ValueError):
+        prefs = {}
+
+    merged_prefs = {**DEFAULT_NOTIFICATION_PREFS, **prefs}
+
+    return jsonify({
+        "success": True,
+        "preferences": {
+            "theme_accent": admin.theme_accent or "blue",
+            "theme_mode": admin.theme_mode or "light",
+            "notification_prefs": merged_prefs
+        }
+    }), 200
+
+
+# ==========================
+# Update Preferences API (Appearance + Notifications)
+# ==========================
+@auth.route("/preferences", methods=["PUT"])
+@jwt_required()
+def update_preferences():
+
+    admin_id = get_jwt_identity()
+    admin = Admin.query.get(admin_id)
+
+    if not admin:
+        return jsonify({
+            "success": False,
+            "message": "Admin not found"
+        }), 404
+
+    data = request.get_json(silent=True) or {}
+
+    valid_accents = ["blue", "green", "black", "purple", "red", "orange"]
+    valid_modes = ["light", "dark"]
+
+    if "theme_accent" in data:
+        accent = data.get("theme_accent")
+        if accent not in valid_accents:
+            return jsonify({
+                "success": False,
+                "message": f"theme_accent must be one of: {', '.join(valid_accents)}"
+            }), 400
+        admin.theme_accent = accent
+
+    if "theme_mode" in data:
+        mode = data.get("theme_mode")
+        if mode not in valid_modes:
+            return jsonify({
+                "success": False,
+                "message": f"theme_mode must be one of: {', '.join(valid_modes)}"
+            }), 400
+        admin.theme_mode = mode
+
+    if "notification_prefs" in data and isinstance(data.get("notification_prefs"), dict):
+        try:
+            existing = json.loads(admin.notification_prefs) if admin.notification_prefs else {}
+        except (TypeError, ValueError):
+            existing = {}
+        merged = {**DEFAULT_NOTIFICATION_PREFS, **existing, **data["notification_prefs"]}
+        admin.notification_prefs = json.dumps(merged)
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "message": "Failed to update preferences"
+        }), 500
+
+    _log_activity(admin.id, "Authentication", "Update", "Preferences updated")
+
+    try:
+        prefs = json.loads(admin.notification_prefs) if admin.notification_prefs else {}
+    except (TypeError, ValueError):
+        prefs = {}
+
+    return jsonify({
+        "success": True,
+        "message": "Preferences updated successfully",
+        "preferences": {
+            "theme_accent": admin.theme_accent or "blue",
+            "theme_mode": admin.theme_mode or "light",
+            "notification_prefs": {**DEFAULT_NOTIFICATION_PREFS, **prefs}
         }
     }), 200

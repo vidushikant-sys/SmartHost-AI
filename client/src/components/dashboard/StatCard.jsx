@@ -11,19 +11,20 @@
 // ==========================================================
 
 const COLOR_MAP = {
-  blue: { bg: "rgba(37, 99, 235, 0.1)", fg: "#2563EB" },
-  green: { bg: "rgba(34, 197, 94, 0.1)", fg: "#16803C" },
-  amber: { bg: "rgba(245, 158, 11, 0.12)", fg: "#B45309" },
-  purple: { bg: "rgba(139, 92, 246, 0.1)", fg: "#7C3AED" },
+  blue: "#2563EB",
+  green: "#16A34A",
+  amber: "#F59E0B",
+  purple: "#7C3AED",
+  pink: "#EC4899",
 };
 
 function StatCard({ label, value, icon, color = "blue", trend, loading }) {
-  const palette = COLOR_MAP[color] || COLOR_MAP.blue;
+  const fg = COLOR_MAP[color] || COLOR_MAP.blue;
 
   if (loading) {
     return (
       <div className="stat-card">
-        <div className="skeleton" style={{ width: 46, height: 46, borderRadius: 13 }} />
+        <div className="skeleton" style={{ width: 46, height: 46, borderRadius: "50%" }} />
         <div className="skeleton" style={{ width: "60%", height: 26 }} />
         <div className="skeleton" style={{ width: "40%", height: 14 }} />
       </div>
@@ -33,7 +34,7 @@ function StatCard({ label, value, icon, color = "blue", trend, loading }) {
   return (
     <div className="stat-card">
       <div className="stat-top">
-        <div className="stat-icon" style={{ background: palette.bg, color: palette.fg }}>
+        <div className="stat-icon" style={{ background: fg }}>
           {icon}
         </div>
 

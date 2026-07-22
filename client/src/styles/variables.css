@@ -1,7 +1,13 @@
 :root{
 
+  /* These defaults match the "Blue" + "Light" appearance preset.
+     ThemeContext (client/src/context/ThemeContext.jsx) overrides
+     these on document.documentElement at runtime based on the
+     user's saved Appearance settings (Settings page). */
+
   --primary:#2563EB;
   --primary-dark:#1D4ED8;
+  --primary-light:#DBEAFE;
 
   --background:#F8FAFC;
 
@@ -10,6 +16,8 @@
   --text:#1E293B;
 
   --text-light:#64748B;
+
+  --border-color:rgba(15,23,42,0.08);
 
   --success:#22C55E;
 
@@ -21,4 +29,18 @@
 
   --shadow:0 10px 30px rgba(0,0,0,.08);
 
+  /* Tells the browser which palette to use for chrome it renders
+     itself — the OPEN <select> options popup, the native date-picker
+     calendar, scrollbars, etc. Author CSS (background/color) can only
+     style the CLOSED control; without this the popup ignores our
+     dark theme entirely and always renders light, which is why every
+     dropdown/date-picker still shows a white list even though the box
+     itself looks dark. ThemeContext already sets data-theme="dark" on
+     <html>, so this just needs to react to that. */
+  color-scheme: light;
+
+}
+
+:root[data-theme="dark"]{
+  color-scheme: dark;
 }

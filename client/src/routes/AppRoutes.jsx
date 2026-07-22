@@ -1,10 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "../context/AuthContext";
+import { ThemeProvider } from "../context/ThemeContext";
 import { HostelProvider } from "../context/HostelContext";
 import ProtectedRoute from "./ProtectedRoute";
 
 import Login from "../auth/Login";
 import Dashboard from "../pages/dashboard/Dashboard";
+import Settings from "../pages/settings/Settings";
+import NotificationCenter from "../pages/notifications/NotificationCenter";
+import Reports from "../pages/reports/Reports";
 
 // ======================
 // Student Module
@@ -55,9 +59,10 @@ import EditNotice from "../pages/notices/EditNotice";
 function AppRoutes() {
   return (
     <AuthProvider>
-      <HostelProvider>
-        <BrowserRouter>
-          <Routes>
+      <ThemeProvider>
+        <HostelProvider>
+          <BrowserRouter>
+            <Routes>
             {/* Public */}
             <Route path="/" element={<Login />} />
 
@@ -233,6 +238,36 @@ function AppRoutes() {
               }
             />
 
+            {/* ================= Reports ================= */}
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= Notifications ================= */}
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationCenter />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= Settings ================= */}
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+
             {/* ================= Notice Routes ================= */}
             <Route
               path="/notices"
@@ -261,6 +296,7 @@ function AppRoutes() {
           </Routes>
         </BrowserRouter>
       </HostelProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

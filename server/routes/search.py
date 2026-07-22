@@ -6,7 +6,8 @@ from services.search_service import (
     search_students,
     search_rooms,
     search_hostels,
-    search_fees
+    search_fees,
+    search_complaints
 )
 
 from utils.response import (
@@ -157,6 +158,42 @@ def fee_search():
     except Exception as e:
 
         print("FEE SEARCH ERROR:", e)
+
+        return error_response(
+            "Internal server error",
+            500
+        )
+
+
+
+# ==================================================
+# Complaint Search
+# ==================================================
+
+@search_bp.route(
+    "/complaints",
+    methods=["GET"]
+)
+@jwt_required()
+def complaint_search():
+
+    try:
+
+        filters = request.args.to_dict()
+
+        complaints = search_complaints(
+            filters
+        )
+
+        return success_response(
+            "Complaints searched successfully",
+            complaints
+        )
+
+
+    except Exception as e:
+
+        print("COMPLAINT SEARCH ERROR:", e)
 
         return error_response(
             "Internal server error",

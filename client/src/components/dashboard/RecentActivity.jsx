@@ -39,6 +39,12 @@ const CATEGORY_ICON = {
   ),
 };
 
+const CATEGORY_COLOR = {
+  Electricity: "#F59E0B",
+  Water: "#0EA5E9",
+  default: "#EC4899",
+};
+
 function RecentActivity({ complaints = [], loading }) {
   return (
     <div className="panel">
@@ -65,8 +71,8 @@ function RecentActivity({ complaints = [], loading }) {
               <div
                 className="list-item-icon"
                 style={{
-                  background: "rgba(239, 68, 68, 0.1)",
-                  color: "#DC2626",
+                  background: CATEGORY_COLOR[c.category] || CATEGORY_COLOR.default,
+                  color: "#fff",
                 }}
               >
                 <svg viewBox="0 0 24 24">

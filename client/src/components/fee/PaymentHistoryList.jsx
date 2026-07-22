@@ -40,7 +40,7 @@ function PaymentHistoryList({ payments, onChanged }) {
       {error && <div className="room-form-error-banner">{error}</div>}
       {list.map((p) => (
         <div className="fee-payment-item" key={p.id}>
-          <div className="fee-payment-icon">{METHOD_ICON[p.payment_method] || "💰"}</div>
+          <div className="fee-payment-icon">{METHOD_ICON[p.payment_method] || "🧾"}</div>
           <div className="fee-payment-info">
             <div className="fee-payment-amount">
               ₹{Number(p.payment_amount).toLocaleString("en-IN")}

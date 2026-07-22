@@ -94,7 +94,7 @@
 }
 
 .room-btn-secondary {
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   color: var(--text);
   font-size: 13.5px;
   font-weight: 600;
@@ -104,7 +104,7 @@
 }
 
 .room-btn-secondary:hover {
-  background: #E2E8F0;
+  background: var(--border-color);
 }
 
 .room-btn-danger {
@@ -213,18 +213,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #F8FAFC;
+  background: var(--background);
   border: 1px solid var(--border);
   border-radius: 11px;
   padding: 0 14px;
   height: 44px;
-  color: #94A3B8;
+  color: var(--text-light);
   transition: 0.2s;
 }
 
 .room-search:focus-within {
   border-color: var(--primary);
-  background: white;
+  background: var(--white);
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
@@ -248,7 +248,7 @@
   padding: 0 34px 0 16px;
   border-radius: 11px;
   border: 1px solid var(--border);
-  background: #F8FAFC url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 12px center;
+  background: var(--background) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 12px center;
   background-size: 15px;
   appearance: none;
   font-size: 13.5px;
@@ -293,7 +293,7 @@
 }
 
 .room-row:hover {
-  background: #F8FAFC;
+  background: var(--background);
 }
 
 .room-row td {
@@ -353,7 +353,7 @@
   width: 32px;
   height: 32px;
   border-radius: 9px;
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   color: #475569;
   display: flex;
   align-items: center;
@@ -362,7 +362,7 @@
 }
 
 .room-icon-btn:hover {
-  background: #E2E8F0;
+  background: var(--border-color);
 }
 
 .room-icon-btn.danger:hover {
@@ -432,7 +432,7 @@
 .room-pagination-btns button {
   padding: 7px 14px;
   border-radius: 8px;
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   font-size: 12.5px;
   font-weight: 600;
   color: var(--text);
@@ -440,7 +440,7 @@
 }
 
 .room-pagination-btns button:hover:not(:disabled) {
-  background: #E2E8F0;
+  background: var(--border-color);
 }
 
 .room-pagination-btns button:disabled {
@@ -475,7 +475,7 @@
 }
 
 .room-modal-box {
-  background: white;
+  background: var(--white, #fff);
   border-radius: 18px;
   padding: 28px;
   max-width: 400px;
@@ -671,7 +671,7 @@
   font-size: 14px;
   font-family: "Poppins", sans-serif;
   color: var(--text);
-  background: white;
+  background: var(--white, #fff);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -696,14 +696,14 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--text-light);
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   padding: 5px 12px;
   border-radius: 20px;
   transition: background 0.15s ease;
 }
 
 .room-facility-suggestion:hover {
-  background: #E2E8F0;
+  background: var(--border-color);
   color: var(--text);
 }
 
@@ -722,7 +722,7 @@
   padding: 0 14px;
   border: 1.5px solid #E2E8F0;
   border-radius: 10px;
-  background: #F8FAFC;
+  background: var(--background, #F8FAFC);
   font-size: 14px;
   font-weight: 600;
   color: var(--text);

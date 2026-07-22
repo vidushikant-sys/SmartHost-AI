@@ -44,17 +44,123 @@
   font-size: 14.5px;
 }
 
-.dashboard-header .header-date {
+/* ==========================================================
+   Date + Weather card (replaces the old plain header-date pill)
+========================================================== */
+.date-weather-card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  gap: 16px;
+  padding: 14px 22px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  box-shadow: 0 12px 28px -10px rgba(37, 99, 235, 0.45);
+  color: #fff;
+  min-width: 300px;
+}
+
+.dwc-weather {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dwc-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
-  color: var(--text-light);
-  font-size: 13.5px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.dwc-icon--pulse {
+  animation: dwc-pulse 1.6s ease-in-out infinite;
+}
+
+.dwc-icon--muted {
+  opacity: 0.55;
+}
+
+@keyframes dwc-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.dwc-temp-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.dwc-temp {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.dwc-condition {
+  font-size: 11.5px;
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.dwc-divider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.dwc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.dwc-day {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.dwc-date-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+.dwc-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dwc-location--muted {
+  color: rgba(255, 255, 255, 0.65);
+  font-style: italic;
+}
+
+@media (max-width: 560px) {
+  .date-weather-card {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* ==========================================================
@@ -94,11 +200,13 @@
 .stat-icon {
   width: 46px;
   height: 46px;
-  border-radius: 13px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: #fff;
+  box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.25);
 }
 
 .stat-icon svg {
@@ -142,6 +250,14 @@
 /* ==========================================================
    Main content grid: left (wide) / right (narrow) rail
 ========================================================== */
+.top-panels-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -227,16 +343,16 @@
 }
 
 .chart-bar {
-  fill: #DCE7FB;
+  fill: #8B5CF6;
   transition: fill 0.2s ease;
 }
 
 .chart-bar-group:hover .chart-bar {
-  fill: var(--primary);
+  fill: #6D28D9;
 }
 
 .chart-bar-group.is-peak .chart-bar {
-  fill: var(--primary);
+  fill: #6D28D9;
 }
 
 .chart-axis-label {
@@ -293,7 +409,7 @@
   text-align: center;
   padding: 12px 8px;
   border-radius: 12px;
-  background: #F8FAFC;
+  background: var(--background);
 }
 
 .occupancy-legend-item .dot {
@@ -422,7 +538,7 @@
   padding: 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: #F8FAFC;
+  background: var(--background);
   transition: all 0.2s ease;
   text-align: left;
 }
@@ -499,11 +615,13 @@
 @media (max-width: 1180px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .dashboard-grid { grid-template-columns: 1fr; }
+  .top-panels-row { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 720px) {
   .stats-grid { grid-template-columns: 1fr; }
   .split-row { grid-template-columns: 1fr; }
   .quick-actions-grid { grid-template-columns: 1fr; }
+  .top-panels-row { grid-template-columns: 1fr; }
   .dashboard-content { padding: 20px 16px 40px; }
 }

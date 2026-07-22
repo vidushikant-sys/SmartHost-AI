@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./variables.css";
 
 *{
     margin:0;
@@ -12,9 +13,10 @@ html{
 
 body{
     font-family: "Poppins", sans-serif;
-    background:#F8FAFC;
-    color:#1E293B;
+    background:var(--background);
+    color:var(--text);
     overflow-x:hidden;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 a{
@@ -32,47 +34,21 @@ button{
 input{
     font-family:inherit;
     outline:none;
-}*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
 }
 
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-
-    font-family: "Poppins", sans-serif;
-
-    background:#F8FAFC;
-
-    color:#1E293B;
-
-    overflow-x:hidden;
-}
-
-a{
-    text-decoration:none;
-    color:inherit;
-}
-
-button{
-
-    cursor:pointer;
-
-    border:none;
-
-    outline:none;
-
-    font-family:inherit;
-}
-
-input{
-
-    font-family:inherit;
-
-    outline:none;
-
+/* ==========================================================
+   Native <select> dropdown popups (the OPEN list of options)
+   are drawn by the browser itself, not by our CSS classes, so
+   every per-page stylesheet that themes the closed select box
+   (form.css, hostel.css, allocation.css, etc.) has no effect on
+   the popup list. This single rule, loaded on every page via
+   global.css, covers the whole app in both rendering paths:
+   - Chrome/Edge look at color-scheme (already set on :root in
+     variables.css) to paint the popup.
+   - Firefox instead honors explicit background/color set
+     directly on <option>, so we set that here too.
+========================================================== */
+select option {
+    background-color: var(--white);
+    color: var(--text);
 }

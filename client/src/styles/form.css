@@ -6,6 +6,7 @@
    InputField.jsx is used.
 ========================================================== */
 
+.input-group input,
 .input-group select,
 .input-group textarea {
   width: 100%;
@@ -15,7 +16,7 @@
   font-size: 14px;
   font-family: "Poppins", sans-serif;
   color: var(--text);
-  background: white;
+  background: var(--white, #fff);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -34,6 +35,7 @@
   min-height: 70px;
 }
 
+.input-group input:focus,
 .input-group select:focus,
 .input-group textarea:focus {
   outline: none;
@@ -44,7 +46,7 @@
 .input-group input:disabled,
 .input-group select:disabled,
 .input-group textarea:disabled {
-  background: #F1F5F9;
+  background: var(--background, #F1F5F9);
   cursor: not-allowed;
   color: #94A3B8;
 }

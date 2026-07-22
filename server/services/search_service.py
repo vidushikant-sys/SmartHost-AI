@@ -2,6 +2,7 @@ from models.student import Student
 from models.room import Room
 from models.property import Property
 from models.fee import Fee
+from models.complaint import Complaint
 
 
 
@@ -76,6 +77,15 @@ def search_students(filters):
 def search_rooms(filters):
 
     query = Room.query
+
+
+    if filters.get("room_number"):
+
+        query = query.filter(
+            Room.room_number.ilike(
+                f"%{filters['room_number']}%"
+            )
+        )
 
 
     if filters.get("status"):
@@ -219,4 +229,67 @@ def search_fees(filters):
     return [
         fee.to_dict()
         for fee in fees
+    ]
+
+
+
+# ==================================================
+# Search Complaints
+# ==================================================
+
+def search_complaints(filters):
+
+    query = Complaint.query.join(
+        Student,
+        Complaint.student_id == Student.id
+    )
+
+
+    if filters.get("title"):
+
+        query = query.filter(
+            Complaint.title.ilike(
+                f"%{filters['title']}%"
+            )
+        )
+
+
+    if filters.get("category"):
+
+        query = query.filter(
+            Complaint.category.ilike(
+                f"%{filters['category']}%"
+            )
+        )
+
+
+    if filters.get("status"):
+
+        query = query.filter(
+            Complaint.status == filters["status"]
+        )
+
+
+    if filters.get("priority"):
+
+        query = query.filter(
+            Complaint.priority == filters["priority"]
+        )
+
+
+    if filters.get("student_name"):
+
+        query = query.filter(
+            Student.full_name.ilike(
+                f"%{filters['student_name']}%"
+            )
+        )
+
+
+    complaints = query.all()
+
+
+    return [
+        complaint.to_dict()
+        for complaint in complaints
     ]

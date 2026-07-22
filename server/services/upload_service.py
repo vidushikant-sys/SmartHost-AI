@@ -179,3 +179,16 @@ def upload_room_image(file):
         file,
         "rooms"
     )
+
+
+
+# =====================================
+# Admin Avatar Upload
+# =====================================
+
+def upload_admin_avatar(file):
+
+    return save_file(
+        file,
+        "admins"
+    )
